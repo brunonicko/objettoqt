@@ -42,7 +42,7 @@ goto end
 
 :tests
 python -m pytest tests
-python -m pytest objettoqt --doctest-modules
+rem # python -m pytest objettoqt --doctest-modules
 goto end
 
 :mypy

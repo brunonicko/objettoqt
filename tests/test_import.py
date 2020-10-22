@@ -1,9 +1,5 @@
 # -*- coding: utf-8 -*-
-"""Test importing from `objettoqt`."""
-
 import pytest
-
-__all__ = ["test_import"]
 
 
 def test_import():
