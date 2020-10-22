@@ -57,18 +57,25 @@ def test_widget_list():
 
     qt_app = QtWidgets.QApplication([])
     app = Application()
-    initial = (Thing(app, name=str(i)) for i in range(100))
+    initial = (Thing(app, name=str(i)) for i in range(5))
     lst = list_object_cls(Thing)(app, initial)
 
     window = QtWidgets.QMainWindow()
     widget = QtWidgets.QWidget()
     window.setCentralWidget(widget)
-    layout = QtWidgets.QVBoxLayout()
+    layout = QtWidgets.QHBoxLayout()
     widget.setLayout(layout)
 
-    widget_list = OQWidgetList(ThingWidget, "application/thing_yaml")
-    widget_list.setObj(lst)
-    layout.addWidget(widget_list)
+    widget_list_a = OQWidgetList(ThingWidget, "application/thing_yaml")
+    widget_list_a.setObj(lst)
+
+    widget_list_b = OQWidgetList(
+        ThingWidget, "application/thing_yaml", scrollable=False
+    )
+    widget_list_b.setObj(lst)
+
+    layout.addWidget(widget_list_a)
+    layout.addWidget(widget_list_b)
 
     window.show()
 

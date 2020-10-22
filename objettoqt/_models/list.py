@@ -412,7 +412,7 @@ class OQListModel(OQObjectMixin, QtCore.QAbstractItemModel):
 
         serialized_objs = []
         contents = {
-            "model_id": id(self),
+            "obj_id": id(obj),
             "first_row": first_row,
             "last_row": last_row,
             "serialized_objs": serialized_objs,
@@ -503,7 +503,7 @@ class OQListModel(OQObjectMixin, QtCore.QAbstractItemModel):
                 contents = safe_load(data_stream)
                 if isinstance(contents, collections_abc.Mapping):
                     try:
-                        model_id = contents["model_id"]
+                        obj_id = contents["obj_id"]
                         first_row = contents["first_row"]
                         last_row = contents["last_row"]
                         serialized_objs = contents["serialized_objs"]
@@ -516,7 +516,7 @@ class OQListModel(OQObjectMixin, QtCore.QAbstractItemModel):
                 if serialized_objs:
 
                     # Internal move.
-                    if action == QtCore.Qt.MoveAction and model_id == id(self):
+                    if action == QtCore.Qt.MoveAction and obj_id == id(obj):
                         if row == last_row + 1:
                             row += 1
                         if not (first_row <= row <= last_row + 1):
