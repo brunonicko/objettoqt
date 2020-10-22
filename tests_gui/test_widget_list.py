@@ -16,34 +16,62 @@ def test_widget_list():
     class Thing(Object):
         name = attribute(str, default="Foo")
 
-    class ThingWidget(OQObjectMixin, QtWidgets.QLabel):
+    class ThingWidget(OQObjectMixin, QtWidgets.QWidget):
 
         def __init__(self, **kwargs):
             super(ThingWidget, self).__init__(**kwargs)
-            self.setMargin(20)
+            self.ui_label = QtWidgets.QLabel(parent=self)
+            self.ui_layout = QtWidgets.QVBoxLayout()
+            self.setLayout(self.ui_layout)
+
+            self.ui_button_a = QtWidgets.QPushButton()
+            self.ui_button_a.clicked.connect(self.contract)
+
+            self.ui_button_b = QtWidgets.QPushButton()
+            self.ui_button_b.clicked.connect(self.expand)
+
+            self.ui_layout.addWidget(self.ui_button_a)
+            self.ui_layout.addWidget(self.ui_label)
+            self.ui_layout.addWidget(self.ui_button_b)
+
+        @QtCore.Slot()
+        def contract(self):
+            self.ui_label.setMargin(0)
+
+        @QtCore.Slot()
+        def expand(self):
+            self.ui_label.setMargin(100)
 
         def _onObjChanged(self, obj, old_obj, phase):
             if phase is Phase.PRE:
-                self.setText("")
+                self.ui_label.setText("")
             if phase is Phase.POST:
                 if obj is not None:
-                    self.setText(obj.name)
+                    self.ui_label.setText(obj.name)
 
         def _onActionReceived(self, action, phase):
             if action.sender is self.obj() and phase is Phase.POST:
                 if isinstance(action.change, ObjectUpdate):
                     if "name" in action.change.new_values:
-                        self.setText(action.change.new_values["name"])
+                        self.ui_label.setText(action.change.new_values["name"])
 
     qt_app = QtWidgets.QApplication([])
     app = Application()
-    initial = (Thing(app, name=str(i)) for i in range(3))
+    initial = (Thing(app, name=str(i)) for i in range(100))
     lst = list_object_cls(Thing)(app, initial)
+
+    window = QtWidgets.QMainWindow()
+    widget = QtWidgets.QWidget()
+    window.setCentralWidget(widget)
+    layout = QtWidgets.QVBoxLayout()
+    widget.setLayout(layout)
 
     widget_list = OQWidgetList(ThingWidget, "application/thing_yaml")
     widget_list.setObj(lst)
+    layout.addWidget(widget_list)
 
-    widget_list.show()
+    window.show()
+
     qt_app.exec_()
 
 

@@ -4,8 +4,7 @@
 from PySide2 import QtWidgets, QtCore, QtGui
 from weakref import WeakKeyDictionary, WeakValueDictionary
 from objetto.objects import ListObject, MutableListObject
-from objetto.actions import Action, Phase
-from objetto.bases import BaseObject
+from objetto.actions import Phase
 from objetto.changes import ListInsert, ListMove
 from typing import TYPE_CHECKING
 from six.moves import xrange as x_range
@@ -15,7 +14,7 @@ from .._models.list import OQListModel
 from .._views.list import OQListView
 
 if TYPE_CHECKING:
-    from typing import Any, Type, Optional, Union, Tuple
+    from typing import Any, Type, Optional, Union, Tuple, Callable
 
 __all__ = ["OQWidgetList"]
 
@@ -37,6 +36,7 @@ class OQWidgetList(OQObjectMixin, OQListView):
         editor_widget_type,  # type: Type[OQObjectMixin]
         mime_type=None,  # type: Optional[str]
         scrollable=True,  # type: bool
+        context_menu_callback=None,  # type: Optional[Callable]
         **kwargs
     ):
         # type: (...) -> None
@@ -51,10 +51,10 @@ class OQWidgetList(OQObjectMixin, OQListView):
         self.__scrollable = bool(scrollable)
         self.__delegate = _WidgetListDelegate(parent=self)
         self.__model = _OQWidgetListModel(mime_type=mime_type, parent=self)
+        self.__context_menu_callback = context_menu_callback
 
-        super(OQWidgetList, self).setItemDelegate(self.__delegate)
-        super(OQWidgetList, self).setUniformItemSizes(False)
-        super(OQListView, self).setModel(self.__model)
+        self.installEventFilter(self)
+        self.viewport().installEventFilter(self)
 
         if not scrollable:
             super(OQWidgetList, self).setHorizontalScrollBarPolicy(
@@ -65,8 +65,9 @@ class OQWidgetList(OQObjectMixin, OQListView):
             )
             super(OQWidgetList, self).setFixedHeight(0)
 
-        self.installEventFilter(self)
-        self.viewport().installEventFilter(self)
+        super(OQWidgetList, self).setUniformItemSizes(False)
+        super(OQWidgetList, self).setItemDelegate(self.__delegate)
+        super(OQWidgetList, self).setModel(self.__model)
 
     def __updateLayout__(self):
         if not self.__scrollable:
@@ -194,8 +195,8 @@ class OQWidgetList(OQObjectMixin, OQListView):
         super(OQWidgetList, self).resizeEvent(event)
         self.__model.layoutChanged.emit()
 
-    def itemWidgetType(self):
-        """Get item type."""
+    def editorWidgetType(self):
+        """Get editor widget type."""
         return self.__editor_widget_type
 
     def mimeType(self):
@@ -221,6 +222,7 @@ class OQWidgetList(OQObjectMixin, OQListView):
             selection_model.clearCurrentIndex()
         selection_model.select(selection, mode)
 
+    @QtCore.Slot()
     def clearSelection(self):
         # type: () -> None
         """Clear selection and current."""
@@ -230,6 +232,12 @@ class OQWidgetList(OQObjectMixin, OQListView):
         self.selectionModel().clearSelection()
         self.selectionModel().clearCurrentIndex()
 
+    def showCustomContextMenu(self):
+        """Show custom context menu."""
+        if self.__context_menu_callback is not None:
+            return self.__context_menu_callback(self)
+        return False
+
     def eventFilter(self, obj, event):
         # type: (OQListView, Union[QtCore.QEvent, Any]) -> bool
         """Override default behaviors."""
@@ -237,7 +245,7 @@ class OQWidgetList(OQObjectMixin, OQListView):
         # Object is the list view.
         if obj is self:
 
-            # Pressed delete, is enabled and has focus, delete selected items.
+            # Pressed delete, is enabled and has focus, delete selected.
             if (
                 event.type() == QtCore.QEvent.KeyPress
                 and event.key() == QtCore.Qt.Key_Delete
@@ -466,6 +474,10 @@ class OQWidgetList(OQObjectMixin, OQListView):
                         self.__drag_start_pos = None
                         self.__drag_start_indexes = None
 
+                        # Can we drag?
+                        if not self.dragEnabled():
+                            return True
+
                         # Get mime data.
                         mime_data = self.__model.mimeData(selected_indexes)
                         if mime_data is None:
@@ -475,11 +487,11 @@ class OQWidgetList(OQObjectMixin, OQListView):
                         drag_actions = self.__model.supportedDragActions()
 
                         # Start drag.
-                        drag = QtGui.QDrag(self)
+                        viewport = self.viewport()
+                        drag = QtGui.QDrag(viewport)
                         drag.setMimeData(mime_data)
 
                         # Prepare pixmap.
-                        viewport = self.viewport()
                         pixmap = QtGui.QPixmap(
                             viewport.visibleRegion().boundingRect().size()
                         )
@@ -638,22 +650,23 @@ class OQWidgetList(OQObjectMixin, OQListView):
 class _WidgetListDelegate(QtWidgets.QStyledItemDelegate):
 
     def __init__(self, parent):
-        assert isinstance(parent, OQWidgetList)
         super(_WidgetListDelegate, self).__init__(parent=parent)
         self.__editors = WeakValueDictionary()
         self.__sizes = WeakKeyDictionary()
+        self.__size_hints = WeakKeyDictionary()
 
     def createEditor(self, parent, option, index):
         widget = self.parent()
         if widget is not None:
             obj = widget.obj()
             if obj is not None:
-                editor = widget.itemWidgetType()()
+                editor = widget.editorWidgetType()()
                 editor.setParent(parent)
                 value = obj[index.row()]
                 editor.setObj(value)
                 self.__editors[id(value)] = editor
                 self.__sizes[editor] = editor.size()
+                self.__size_hints[editor] = editor.sizeHint()
                 return editor
         return QtWidgets.QLabel(parent=parent)
 
@@ -683,8 +696,12 @@ class _WidgetListDelegate(QtWidgets.QStyledItemDelegate):
                     size_hint = editor.sizeHint()
                     size = editor.size()
                     previous_size = self.__sizes[editor]
+                    previous_size_hint = self.__size_hints[editor]
                     if size != previous_size:
                         self.__sizes[editor] = size
+                    if size_hint != previous_size_hint:
+                        self.__size_hints[editor] = size_hint
+                    if size_hint != previous_size_hint or size != previous_size:
                         widget.__updateLayout__()
                     return size_hint
         return QtCore.QSize(0, 0)
