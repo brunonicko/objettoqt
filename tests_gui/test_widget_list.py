@@ -72,6 +72,7 @@ def test_widget_list():
     widget_list_b = OQWidgetList(
         ThingWidget, "application/thing_yaml", scrollable=False
     )
+    widget_list_b.setMinimumHeight(32)
     widget_list_b.setObj(lst)
 
     layout.addWidget(widget_list_a)

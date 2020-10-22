@@ -46,20 +46,16 @@ class OQWidgetList(OQObjectMixin, OQListView):
         self.__delegate = _WidgetListDelegate(parent=self)
         self.__model = _OQWidgetListModel(mime_type=mime_type, parent=self)
         self.__context_menu_callback = context_menu_callback
+        self.__minimum_height = 4
 
         self.installEventFilter(self)
         self.viewport().installEventFilter(self)
 
         if not scrollable:
-            super(OQWidgetList, self).setHorizontalScrollBarPolicy(
-                QtCore.Qt.ScrollBarAlwaysOff
-            )
-            super(OQWidgetList, self).setVerticalScrollBarPolicy(
-                QtCore.Qt.ScrollBarAlwaysOff
-            )
-            super(OQWidgetList, self).setFixedHeight(0)
+            self.setHorizontalScrollBarPolicy(QtCore.Qt.ScrollBarAlwaysOff)
+            self.setVerticalScrollBarPolicy(QtCore.Qt.ScrollBarAlwaysOff)
+            self.setFixedHeight(0)
 
-        super(OQWidgetList, self).setUniformItemSizes(False)
         super(OQWidgetList, self).setItemDelegate(self.__delegate)
         super(OQWidgetList, self).setModel(self.__model)
 
@@ -69,11 +65,11 @@ class OQWidgetList(OQObjectMixin, OQListView):
             for widget in self.editors() or ():
                 height += widget.sizeHint().height()
 
-            minimum_height = self.minimumHeight()
+            minimum_height = self.__minimum_height
             if height < minimum_height:
                 height = minimum_height
 
-            super(OQWidgetList, self).setFixedHeight(height)
+            self.setFixedHeight(height)
         self.__model.layoutChanged.emit()
 
     def _onObjChanged(self, obj, old_obj, phase):
@@ -129,6 +125,21 @@ class OQWidgetList(OQObjectMixin, OQListView):
                     selection, QtCore.QItemSelectionModel.ClearAndSelect, current
                 )
 
+            # Update layout.
+            self.__updateLayout__()
+
+    def minimumHeight(self):
+        if not self.__scrollable:
+            return self.__minimum_height
+        else:
+            return super(OQWidgetList, self).minimumHeight()
+
+    def setMinimumHeight(self, minh):
+        if not self.__scrollable:
+            self.__minimum_height = minh
+        else:
+            super(OQWidgetList, self).setMinimumHeight(minh)
+
     def setItemDelegate(self, value):
         error = "can't set item delegate on '{}' object".format(type(self).__name__)
         raise RuntimeError(error)
@@ -136,28 +147,6 @@ class OQWidgetList(OQObjectMixin, OQListView):
     def setModel(self, value):
         error = "can't set model on '{}' object".format(type(self).__name__)
         raise RuntimeError(error)
-
-    def setUniformItemSizes(self, value):
-        error = "can't set uniform item size on '{}' object".format(type(self).__name__)
-        raise RuntimeError(error)
-
-    def setHorizontalScrollBarPolicy(self, value):
-        if not self.__scrollable:
-            error = "can't set horizontal scrollbar policy on a non-scrollable list"
-            raise RuntimeError(error)
-        super(OQWidgetList, self).setHorizontalScrollBarPolicy(value)
-
-    def setVerticalScrollBarPolicy(self, value):
-        if not self.__scrollable:
-            error = "can't set vertical scrollbar policy on a non-scrollable list"
-            raise RuntimeError(error)
-        super(OQWidgetList, self).setVerticalScrollBarPolicy(value)
-
-    def setFixedHeight(self, value):
-        if not self.__scrollable:
-            error = "can't set fixed height on a non-scrollable list"
-            raise RuntimeError(error)
-        super(OQWidgetList, self).setFixedHeight(value)
 
     def scrollable(self):
         # type: () -> bool
@@ -180,7 +169,7 @@ class OQWidgetList(OQObjectMixin, OQListView):
 
     def resizeEvent(self, event):
         super(OQWidgetList, self).resizeEvent(event)
-        self.__model.layoutChanged.emit()
+        self.__updateLayout__()
 
     def editorWidgetType(self):
         """Get editor widget type."""
@@ -241,11 +230,14 @@ class _WidgetListDelegate(QtWidgets.QStyledItemDelegate):
                     size = editor.size()
                     previous_size = self.__sizes[editor]
                     previous_size_hint = self.__size_hints[editor]
+                    update_layout = False
                     if size != previous_size:
                         self.__sizes[editor] = size
+                        update_layout = True
                     if size_hint != previous_size_hint:
                         self.__size_hints[editor] = size_hint
-                    if size_hint != previous_size_hint or size != previous_size:
+                        update_layout = True
+                    if update_layout:
                         widget.__updateLayout__()
                     return size_hint
         return QtCore.QSize(0, 0)

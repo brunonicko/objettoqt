@@ -511,13 +511,4 @@ class OQListView(OQListViewMixin, QtWidgets.QListView):
 
 class OQTreeListView(OQListViewMixin, QtWidgets.QTreeView):
     """List view with support for multiple columns."""
-
-    def __init__(self, **kwargs):
-        super(OQTreeListView, self).__init__(**kwargs)
-        self.setRootIsDecorated(False)
-
-    def setRootIsDecorated(self, show):
-        if show:
-            error = "root cannot be decorated"
-            raise ValueError(error)
-        super(OQTreeListView, self).setRootIsDecorated(False)
+    pass
