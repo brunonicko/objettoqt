@@ -15,7 +15,7 @@ def test_widget_list():
 
     qt_app = QtWidgets.QApplication([])
     app = Application()
-    initial = (Thing(app, name=str(i)) for i in range(100))
+    initial = (Thing(app, name=str(i)) for i in range(1000))
     lst = list_object_cls(Thing)(app, initial)
 
     model = OQListModel(

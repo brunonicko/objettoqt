@@ -57,7 +57,7 @@ def test_widget_list():
 
     qt_app = QtWidgets.QApplication([])
     app = Application()
-    initial = (Thing(app, name=str(i)) for i in range(5))
+    initial = (Thing(app, name=str(i)) for i in range(10))
     lst = list_object_cls(Thing)(app, initial)
 
     window = QtWidgets.QMainWindow()
@@ -73,6 +73,7 @@ def test_widget_list():
         ThingWidget, "application/thing_yaml", scrollable=False
     )
     widget_list_b.setMinimumHeight(32)
+    widget_list_b.setMaximumHeight(800)
     widget_list_b.setObj(lst)
 
     layout.addWidget(widget_list_a)

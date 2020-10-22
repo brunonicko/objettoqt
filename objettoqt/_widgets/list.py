@@ -47,6 +47,7 @@ class OQWidgetList(OQObjectMixin, OQListView):
         self.__model = _OQWidgetListModel(mime_type=mime_type, parent=self)
         self.__context_menu_callback = context_menu_callback
         self.__minimum_height = 4
+        self.__maximum_height = None
 
         self.installEventFilter(self)
         self.viewport().installEventFilter(self)
@@ -62,12 +63,18 @@ class OQWidgetList(OQObjectMixin, OQListView):
     def __updateLayout__(self):
         if not self.__scrollable:
             height = 4
+            maximum_height = self.__maximum_height
             for widget in self.editors() or ():
                 height += widget.sizeHint().height()
-
-            minimum_height = self.__minimum_height
-            if height < minimum_height:
-                height = minimum_height
+                if maximum_height is not None and height > maximum_height:
+                    height = maximum_height
+                    self.setVerticalScrollBarPolicy(QtCore.Qt.ScrollBarAsNeeded)
+                    break
+            else:
+                self.setVerticalScrollBarPolicy(QtCore.Qt.ScrollBarAlwaysOff)
+                minimum_height = self.__minimum_height
+                if height < minimum_height:
+                    height = minimum_height
 
             self.setFixedHeight(height)
         self.__model.layoutChanged.emit()
@@ -139,6 +146,18 @@ class OQWidgetList(OQObjectMixin, OQListView):
             self.__minimum_height = minh
         else:
             super(OQWidgetList, self).setMinimumHeight(minh)
+
+    def maximumHeight(self):
+        if not self.__scrollable:
+            return self.__maximum_height
+        else:
+            return super(OQWidgetList, self).maximumHeight()
+
+    def setMaximumHeight(self, maxh):
+        if not self.__scrollable:
+            self.__maximum_height = maxh
+        else:
+            super(OQWidgetList, self).setMaximumHeight(maxh)
 
     def setItemDelegate(self, value):
         error = "can't set item delegate on '{}' object".format(type(self).__name__)

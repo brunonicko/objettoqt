@@ -1,13 +1,9 @@
 # -*- coding: utf-8 -*-
 
-try:
-    import collections.abc as collections_abc
-except ImportError:
-    import collections as collections_abc
+from abc import abstractmethod
 
 from six import ensure_binary, string_types
-
-from abc import abstractmethod
+from six.moves import collections_abc
 from PySide2 import QtCore
 from yaml import safe_dump, safe_load, YAMLError
 from typing import Any, Optional, Tuple, Dict, List, Union, Iterable
