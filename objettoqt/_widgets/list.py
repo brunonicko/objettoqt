@@ -68,6 +68,11 @@ class OQWidgetList(OQObjectMixin, OQListView):
             height = 4
             for widget in self.editors() or ():
                 height += widget.sizeHint().height()
+
+            minimum_height = self.minimumHeight()
+            if height < minimum_height:
+                height = minimum_height
+
             super(OQWidgetList, self).setFixedHeight(height)
         self.__model.layoutChanged.emit()
 
