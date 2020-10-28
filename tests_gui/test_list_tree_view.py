@@ -2,7 +2,7 @@
 import pytest
 from PySide2 import QtWidgets
 from objetto.applications import Application
-from objetto.objects import Object, attribute, list_object_cls
+from objetto.objects import Object, attribute, list_obj_cls
 
 from objettoqt.models import OQListModel, ListModelHeader
 from objettoqt.views import OQTreeListView
@@ -16,7 +16,7 @@ def test_widget_list():
     qt_app = QtWidgets.QApplication([])
     app = Application()
     initial = (Thing(app, name=str(i)) for i in range(3))
-    lst = list_object_cls(Thing)(app, initial)
+    lst = list_obj_cls(Thing)(app, initial)
 
     model = OQListModel(
         headers=(ListModelHeader(title="name"), ),

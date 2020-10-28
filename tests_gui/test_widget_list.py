@@ -5,7 +5,7 @@ from objetto.applications import Application
 from objetto.bases import BaseObject
 from objetto.actions import Action, Phase
 from objetto.changes import ObjectUpdate
-from objetto.objects import Object, attribute, list_object_cls
+from objetto.objects import Object, attribute, list_obj_cls
 
 from objettoqt.widgets import OQWidgetList
 from objettoqt.mixins import OQObjectMixin
@@ -58,7 +58,7 @@ def test_widget_list():
     qt_app = QtWidgets.QApplication([])
     app = Application()
     initial = (Thing(app, name=str(i)) for i in range(10))
-    lst = list_object_cls(Thing)(app, initial)
+    lst = list_obj_cls(Thing)(app, initial)
 
     window = QtWidgets.QMainWindow()
     widget = QtWidgets.QWidget()

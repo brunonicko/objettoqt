@@ -9,7 +9,7 @@ from yaml import safe_dump, safe_load, YAMLError
 from typing import Any, Optional, Tuple, Dict, List, Union, Iterable
 from objetto.applications import Application
 from objetto.actions import Action, Phase
-from objetto.objects import Object, list_object_cls
+from objetto.objects import Object, list_obj_cls
 from objetto.bases import BaseObject, ListObject, MutableListObject
 from objetto.exceptions import SerializationError
 from objetto.data import InteractiveData, data_attribute
@@ -92,7 +92,7 @@ class _InternalHeaders(OQObject):
 class OQListModel(OQObjectMixin, QtCore.QAbstractItemModel):
     """List model."""
 
-    __default_headers_cls = list_object_cls(
+    __default_headers_cls = list_obj_cls(
         BaseListModelHeader, exact=False, child=False
     )
 
@@ -315,7 +315,7 @@ class OQListModel(OQObjectMixin, QtCore.QAbstractItemModel):
         """Get header data."""
         if orientation == QtCore.Qt.Horizontal:
             if role == QtCore.Qt.DisplayRole:
-                return self.headersObj()[column].title
+                return self.headersObj()[column].title.capitalize()
             elif role == QtCore.Qt.UserRole:
                 return self.headersObj()[column]
 

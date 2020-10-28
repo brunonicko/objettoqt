@@ -3,14 +3,14 @@ import pytest
 from PySide2 import QtCore
 
 from objetto.applications import Application
-from objetto.objects import list_object_cls
+from objetto.objects import list_obj_cls
 
 from objettoqt.models import OQListModel
 
 
 def test_list_model():
     app = Application()
-    lst = list_object_cls(int)(app, range(10))
+    lst = list_obj_cls(int)(app, range(10))
 
     model = OQListModel()
     model.setObj(lst)
