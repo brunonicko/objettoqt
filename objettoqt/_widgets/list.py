@@ -46,7 +46,7 @@ class OQWidgetList(OQObjectMixin, OQListView):
         self.__delegate = _WidgetListDelegate(parent=self)
         self.__model = _OQWidgetListModel(mime_type=mime_type, parent=self)
         self.__context_menu_callback = context_menu_callback
-        self.__minimum_height = 4
+        self.__minimum_height = 3
         self.__maximum_height = None
 
         self.installEventFilter(self)
@@ -55,14 +55,17 @@ class OQWidgetList(OQObjectMixin, OQListView):
         if not scrollable:
             self.setHorizontalScrollBarPolicy(QtCore.Qt.ScrollBarAlwaysOff)
             self.setVerticalScrollBarPolicy(QtCore.Qt.ScrollBarAlwaysOff)
+            self.horizontalScrollBar().valueChanged.connect(self.__fixScrolling)
+            self.verticalScrollBar().valueChanged.connect(self.__fixScrolling)
             self.setFixedHeight(0)
+            self.__fixScrolling()
 
         super(OQWidgetList, self).setItemDelegate(self.__delegate)
         super(OQWidgetList, self).setModel(self.__model)
 
     def __updateLayout__(self):
         if not self.__scrollable:
-            height = 4
+            height = 3
             maximum_height = self.__maximum_height
             for widget in self.editors() or ():
                 height += widget.sizeHint().height()
@@ -78,6 +81,20 @@ class OQWidgetList(OQObjectMixin, OQListView):
 
             self.setFixedHeight(height)
         self.__model.layoutChanged.emit()
+
+    @QtCore.Slot()
+    def __fixScrolling(self):
+        """Force fixed scrolling."""
+        horizontal_bar = self.horizontalScrollBar()
+        vertical_bar = self.verticalScrollBar()
+        horizontal_bar.valueChanged.disconnect(self.__fixScrolling)
+        vertical_bar.valueChanged.disconnect(self.__fixScrolling)
+        try:
+            horizontal_bar.setValue(horizontal_bar.minimum())
+            vertical_bar.setValue(vertical_bar.minimum())
+        finally:
+            horizontal_bar.valueChanged.connect(self.__fixScrolling)
+            vertical_bar.valueChanged.connect(self.__fixScrolling)
 
     def _onObjChanged(self, obj, old_obj, phase):
         if phase is Phase.PRE:
