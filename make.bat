@@ -34,9 +34,7 @@ goto end
 
 :environment
 python -m pip install --upgrade pip
-pip uninstall -y objetto
 pip install git+git://github.com/psf/black
-pip install git+git://github.com/brunonicko/objetto@application
 pip install -r requirements.txt --upgrade
 pip install -r dev_requirements.txt --upgrade
 goto end
