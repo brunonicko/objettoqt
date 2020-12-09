@@ -2,7 +2,7 @@
 import pytest
 from objetto.applications import Application
 from objetto.objects import Object, attribute
-from objetto.actions import Phase
+from objetto.constants import POST
 
 from objettoqt.mixins import OQObjectMixin
 
@@ -22,27 +22,27 @@ def test_mixin():
             self.received = action, phase
 
     app = Application()
-    obj = Thing(app)
+    thing = Thing(app)
 
     dummy = DummyQObject()
     assert dummy.objToken() is None
-    dummy.setObj(obj)
+    dummy.setObj(thing)
     assert dummy.objToken() is not None
 
     assert dummy.changed is not None
     assert dummy.received is None
-    obj.name = "Bar"
+    thing.name = "Bar"
     assert dummy.received is not None
-    assert dummy.received[-1] is Phase.POST
+    assert dummy.received[-1] is POST
 
     dummy.setObj(None)
-    assert dummy.changed == (None, obj, Phase.POST)
+    assert dummy.changed == (None, thing, POST)
     assert dummy.objToken() is None
     dummy.received = None
-    obj.name = "Foo"
+    thing.name = "Foo"
     assert dummy.received is None
     assert dummy.changed is not None
-    assert dummy.changed == (None, obj, Phase.POST)
+    assert dummy.changed == (None, thing, POST)
 
 
 if __name__ == "__main__":

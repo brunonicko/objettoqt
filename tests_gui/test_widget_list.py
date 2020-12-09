@@ -2,10 +2,9 @@
 import pytest
 from PySide2 import QtCore, QtWidgets
 from objetto.applications import Application
-from objetto.bases import BaseObject
-from objetto.actions import Action, Phase
-from objetto.changes import ObjectUpdate
-from objetto.objects import Object, attribute, list_obj_cls
+from objetto.constants import PRE, POST
+from objetto.objects import Object, attribute, list_cls
+from objetto.changes import Update
 
 from objettoqt.widgets import OQWidgetList
 from objettoqt.mixins import OQObjectMixin
@@ -43,22 +42,22 @@ def test_widget_list():
             self.ui_label.setMargin(100)
 
         def _onObjChanged(self, obj, old_obj, phase):
-            if phase is Phase.PRE:
+            if phase is PRE:
                 self.ui_label.setText("")
-            if phase is Phase.POST:
+            if phase is POST:
                 if obj is not None:
                     self.ui_label.setText(obj.name)
 
         def _onActionReceived(self, action, phase):
-            if action.sender is self.obj() and phase is Phase.POST:
-                if isinstance(action.change, ObjectUpdate):
+            if action.sender is self.obj() and phase is POST:
+                if isinstance(action.change, Update):
                     if "name" in action.change.new_values:
                         self.ui_label.setText(action.change.new_values["name"])
 
     qt_app = QtWidgets.QApplication([])
     app = Application()
     initial = (Thing(app, name=str(i)) for i in range(10))
-    lst = list_obj_cls(Thing)(app, initial)
+    lst = list_cls(Thing)(app, initial)
 
     window = QtWidgets.QMainWindow()
     widget = QtWidgets.QWidget()

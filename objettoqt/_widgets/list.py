@@ -3,7 +3,7 @@
 
 from PySide2 import QtWidgets, QtCore
 from weakref import WeakKeyDictionary, WeakValueDictionary
-from objetto.actions import Phase
+from objetto.bases import Phase
 from objetto.changes import ListInsert, ListMove
 from typing import TYPE_CHECKING
 from six.moves import xrange as x_range

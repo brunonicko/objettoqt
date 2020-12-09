@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 from PySide2 import QtWidgets, QtCore, QtGui
-from objetto.bases import MutableListObject
+from objetto.objects import MutableListObject
 
 __all__ = ["OQListViewMixin", "OQListView", "OQTreeListView"]
 

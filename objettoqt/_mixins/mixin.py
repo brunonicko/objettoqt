@@ -5,23 +5,37 @@ from weakref import ref
 
 from typing import TYPE_CHECKING, final
 from PySide2 import QtCore
-from objetto.actions import Action, Phase, ActionObserver
-from objetto.bases import BaseObject
+
+from objetto.objects import Action
+from objetto.observers import ActionObserver
+from objetto.bases import BaseObject, Phase
 
 if TYPE_CHECKING:
     from typing import Optional
-    from objetto.actions import ObserverToken
+    from objetto.observers import ActionObserverToken
 
 __all__ = ["OQObjectMixin"]
 
 
 class _InternalObserver(ActionObserver):
+    """
+    The actual action observer.
+
+    :param qobj: Objetto Qt object mixin.
+    """
 
     def __init__(self, qobj):
+        # type: (OQObjectMixin) -> None
         self.__qobj_ref = ref(qobj)
 
-    def __receive__(self, action, phase):
+    def __observe__(self, action, phase):
         # type: (Action, Phase) -> None
+        """
+        Observe an action (and its execution phase) from an object.
+
+        :param action: Action.
+        :param phase: Phase.
+        """
         qobj = self.__qobj_ref()
         if qobj is not None and not qobj._destroyed():
             qobj._onActionReceived(action, phase)
@@ -30,8 +44,8 @@ class _InternalObserver(ActionObserver):
 class OQObjectMixin(object):
     """Allows QObjects to observe actions from an objetto object."""
 
-    def __init__(self, **kwargs):
-        super(OQObjectMixin, self).__init__(**kwargs)
+    def __init__(self, *args, **kwargs):
+        super(OQObjectMixin, self).__init__(*args, **kwargs)
         self.__observer = _InternalObserver(self)
         self.__obj = None
         self.__obj_token = None
@@ -43,6 +57,7 @@ class OQObjectMixin(object):
     def _destroyed(self):
         return self.__destroyed
 
+    @QtCore.Slot()
     def __onDestroyed(self):
         self.__destroyed = True
         self._onDestroyed()
@@ -79,6 +94,6 @@ class OQObjectMixin(object):
         self._onObjChanged(obj, old_obj, Phase.POST)
 
     def objToken(self):
-        # type: () -> Optional[ObserverToken]
+        # type: () -> Optional[ActionObserverToken]
         """Get the observer token."""
         return self.__obj_token

@@ -8,10 +8,11 @@ from PySide2 import QtCore
 from yaml import safe_dump, safe_load, YAMLError
 from typing import Any, Optional, Tuple, Dict, List, Union, Iterable
 from objetto.applications import Application
-from objetto.actions import Action, Phase
-from objetto.objects import Object, list_obj_cls
-from objetto.bases import BaseObject, ListObject, MutableListObject
+from objetto.objects import Action, Object, ListObject, MutableListObject, list_cls
+from objetto.constants import Phase
+from objetto.bases import BaseObject
 from objetto.exceptions import SerializationError
+from objetto.utils.reraise_context import ReraiseContext
 from objetto.data import InteractiveData, data_attribute
 from objetto.utils.type_checking import assert_is_instance
 from objetto.changes import (
@@ -92,9 +93,7 @@ class _InternalHeaders(OQObject):
 class OQListModel(OQObjectMixin, QtCore.QAbstractItemModel):
     """List model."""
 
-    __default_headers_cls = list_obj_cls(
-        BaseListModelHeader, exact=False, child=False
-    )
+    __default_headers_cls = list_cls(BaseListModelHeader, subtypes=True, child=False)
 
     def __init__(
         self,
@@ -114,7 +113,8 @@ class OQListModel(OQObjectMixin, QtCore.QAbstractItemModel):
             if isinstance(header, string_types):
                 header = ListModelHeader(title=header)
             else:
-                assert_is_instance(header, BaseListModelHeader, usecase="header type")
+                with ReraiseContext(TypeError, "'header' parameter"):
+                    assert_is_instance(header, BaseListModelHeader)
             filtered_headers.append(header)
         self.__default_headers_obj = type(self).__default_headers_cls(
             Application(), filtered_headers or (DefaultListModelHeader(),)
@@ -258,9 +258,11 @@ class OQListModel(OQObjectMixin, QtCore.QAbstractItemModel):
         if obj is None:
             self.__headers.setObj(self.__default_headers_obj)
         else:
-            assert_is_instance(obj, ListObject, usecase="'obj' parameter")
+            with ReraiseContext(TypeError, "'obj' parameter"):
+                assert_is_instance(obj, ListObject)
             for header in obj:
-                assert_is_instance(header, BaseListModelHeader, usecase="header type")
+                with ReraiseContext(TypeError, "'obj' parameter contents"):
+                    assert_is_instance(header, BaseListModelHeader)
             self.__headers.setObj(obj)
 
     def headersObjToken(self):
@@ -279,7 +281,8 @@ class OQListModel(OQObjectMixin, QtCore.QAbstractItemModel):
             if isinstance(header, string_types):
                 header = ListModelHeader(title=header)
             else:
-                assert_is_instance(header, BaseListModelHeader, usecase="header type")
+                with ReraiseContext(TypeError, "'headers' parameter"):
+                    assert_is_instance(header, BaseListModelHeader)
             filtered_headers.append(header)
         if filtered_headers:
             headers_obj = type(self).__default_headers_cls(
@@ -396,7 +399,7 @@ class OQListModel(OQObjectMixin, QtCore.QAbstractItemModel):
 
         # Only sequential indexes are supported.
         rows = []
-        for i, index in enumerate(sorted(indexes, key=lambda i: i.row())):
+        for i, index in enumerate(sorted(indexes, key=lambda x: x.row())):
             row = index.row()
             if i > 0:
                 previous_row = rows[-1]
@@ -431,6 +434,7 @@ class OQListModel(OQObjectMixin, QtCore.QAbstractItemModel):
         except YAMLError:
             return None
         mime_data = QtCore.QMimeData()
+        # noinspection PyTypeChecker
         mime_data.setData(mime_type, ensure_binary(data_stream))
         return mime_data
 
