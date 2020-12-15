@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
-from PySide2 import QtWidgets
+from Qt import QtWidgets
 
-from .._mixins.mixin import OQObjectMixin
+from ..mixin import OQObjectMixin
 
 __all__ = ["OQWidget"]
 

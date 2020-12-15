@@ -32,4 +32,4 @@ def test_list_view():
 
 
 if __name__ == "__main__":
-    pytest.main()
+    pytest.main([__file__, "-s", "-v"])

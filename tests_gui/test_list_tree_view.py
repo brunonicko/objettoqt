@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 import pytest
-from PySide2 import QtWidgets
+from Qt import QtWidgets
 from objetto.applications import Application
 from objetto.objects import Object, attribute, list_cls
 
@@ -32,4 +32,4 @@ def test_list_tree_view():
 
 
 if __name__ == "__main__":
-    pytest.main()
+    pytest.main([__file__, "-s", "-v"])

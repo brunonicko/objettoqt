@@ -1,16 +1,15 @@
 # -*- coding: utf-8 -*-
+"""List model."""
 
 from abc import abstractmethod
 
 from six import ensure_binary, string_types
 from six.moves import collections_abc
-from PySide2 import QtCore
+from Qt import QtCore
 from yaml import safe_dump, safe_load, YAMLError
-from typing import Any, Optional, Tuple, Dict, List, Union, Iterable
-from objetto.applications import Application
-from objetto.objects import Action, Object, ListObject, MutableListObject, list_cls
-from objetto.constants import Phase
-from objetto.bases import BaseObject
+from objetto import Application
+from objetto.objects import ListObject, MutableListObject, list_cls
+from objetto.bases import BaseObject, Phase
 from objetto.exceptions import SerializationError
 from objetto.utils.reraise_context import ReraiseContext
 from objetto.data import InteractiveData, data_attribute
@@ -22,30 +21,28 @@ from objetto.changes import (
     ListUpdate,
 )
 
-from .._mixins.mixin import OQObjectMixin
+from ..mixin import OQObjectMixin
 from .._objects.object import OQObject
 
 __all__ = [
+    "OQListModel",
     "BaseListModelHeader",
     "ListModelHeader",
     "DefaultListModelHeader",
-    "OQListModel",
 ]
 
 
 class BaseListModelHeader(InteractiveData):
     """Carries information on how the data should be retrieved for a column."""
-    title = data_attribute(str)  # type: str
+    title = data_attribute(str)
     metadata = data_attribute((), default=None)
 
     def flags(self, obj, row):
-        # type: (ListObject, int) -> int
         """Retrieve flags for an item at a specific row."""
         return QtCore.Qt.ItemIsEnabled | QtCore.Qt.ItemIsSelectable
 
     @abstractmethod
     def data(self, obj, row, role=QtCore.Qt.DisplayRole):
-        # type: (ListObject, int, int) -> Any
         """Retrieve data for an item at a specific row."""
         raise NotImplementedError()
 
@@ -53,10 +50,9 @@ class BaseListModelHeader(InteractiveData):
 class ListModelHeader(BaseListModelHeader):
 
     def data(self, obj, row, role=QtCore.Qt.DisplayRole):
-        # type: (ListObject, int, int) -> Any
         """Retrieve data for an item at a specific row."""
         if role == QtCore.Qt.DisplayRole:
-            sub_obj = obj[row]  # type: Object
+            sub_obj = obj[row]
             return str(sub_obj[self.title])
         elif role == QtCore.Qt.UserRole:
             return obj[row]
@@ -64,10 +60,9 @@ class ListModelHeader(BaseListModelHeader):
 
 class DefaultListModelHeader(BaseListModelHeader):
     """Default list model header (coerces the item to a string for display purposes)."""
-    title = data_attribute(str, default="")  # type: str
+    title = data_attribute(str, default="")
 
     def data(self, obj, row, role=QtCore.Qt.DisplayRole):
-        # type: (ListObject, int, int) -> Any
         """Retrieve data for an item at a specific row."""
         if role == QtCore.Qt.DisplayRole:
             return str(obj[row])
@@ -78,13 +73,11 @@ class DefaultListModelHeader(BaseListModelHeader):
 class _InternalHeaders(OQObject):
 
     def _onObjChanged(self, obj, old_obj, phase):
-        # type: (Optional[BaseObject], Optional[BaseObject], Phase) -> None
         list_model = self.parent()
         assert isinstance(list_model, OQListModel)
         list_model._onHeadersObjChanged(obj, old_obj, phase)
 
     def _onActionReceived(self, action, phase):
-        # type: (Action, Phase) -> None
         list_model = self.parent()
         assert isinstance(list_model, OQListModel)
         list_model._onActionReceived(action, phase)
@@ -97,11 +90,10 @@ class OQListModel(OQObjectMixin, QtCore.QAbstractItemModel):
 
     def __init__(
         self,
-        headers=None,  # type: Optional[Iterable[Union[BaseListModelHeader, str]]]
-        mime_type=None,  # type: Optional[str]
+        headers=None,
+        mime_type=None,
         **kwargs
     ):
-        # type: (...) -> None
         """Initialize with optional headers and mime type."""
         super(OQListModel, self).__init__(**kwargs)
 
@@ -274,7 +266,6 @@ class OQListModel(OQObjectMixin, QtCore.QAbstractItemModel):
         return tuple(self.__headers.obj())
 
     def setHeaders(self, headers=None):
-        # type: (Optional[Iterable[Union[BaseListModelHeader, str]]]) -> None
         """Set headers."""
         filtered_headers = []
         for header in headers or ():
@@ -294,14 +285,12 @@ class OQListModel(OQObjectMixin, QtCore.QAbstractItemModel):
 
     def index(
         self,
-        row,  # type: int
-        column=0,  # type: int
-        parent=QtCore.QModelIndex(),  # type: QtCore.QModelIndex
+        row,
+        column=0,
+        parent=QtCore.QModelIndex(),
         *args,
         **kwargs
     ):
-        # type: (...) -> QtCore.QModelIndex
-        """Make QModelIndex."""
         if not parent.isValid():
             obj = self.obj()
             if obj is not None and 0 <= row < len(obj):
@@ -309,12 +298,10 @@ class OQListModel(OQObjectMixin, QtCore.QAbstractItemModel):
         return QtCore.QModelIndex()
 
     def parent(self, index=QtCore.QModelIndex()):
-        # type: (QtCore.QModelIndex) -> QtCore.QModelIndex
         """Get invalid parent index (no valid parent indexes in a list model)."""
         return QtCore.QModelIndex()
 
     def headerData(self, column, orientation, role=QtCore.Qt.DisplayRole):
-        # type: (int, int, int) -> Any
         """Get header data."""
         if orientation == QtCore.Qt.Horizontal:
             if role == QtCore.Qt.DisplayRole:
@@ -323,12 +310,10 @@ class OQListModel(OQObjectMixin, QtCore.QAbstractItemModel):
                 return self.headersObj()[column]
 
     def columnCount(self, *args, **kwargs):
-        # type: (Tuple[Any, ...], Dict[str, Any]) -> int
         """Get column count."""
         return len(self.headersObj())
 
     def rowCount(self, parent=QtCore.QModelIndex(), *args, **kwargs):
-        # type: (QtCore.QModelIndex, Tuple[Any, ...], Dict[str, Any]) -> int
         """Get value count."""
         obj = self.obj()
         if obj is None:
@@ -336,7 +321,6 @@ class OQListModel(OQObjectMixin, QtCore.QAbstractItemModel):
         return len(obj)
 
     def flags(self, index=QtCore.QModelIndex):
-        # type: (QtCore.QModelIndex) -> int
         """Get flags."""
         obj = self.obj()
         if obj is None:
@@ -356,7 +340,6 @@ class OQListModel(OQObjectMixin, QtCore.QAbstractItemModel):
         return flags
 
     def data(self, index=QtCore.QModelIndex(), role=QtCore.Qt.DisplayRole):
-        # type: (QtCore.QModelIndex, int) -> Any
         """Get data."""
         obj = self.obj()
         if obj is None:
@@ -367,19 +350,16 @@ class OQListModel(OQObjectMixin, QtCore.QAbstractItemModel):
         return header.data(obj, row, role)
 
     def mimeType(self):
-        # type: () -> Optional[str]
         """Get mime type."""
         return self.__mime_type
 
     def mimeTypes(self):
-        # type: () -> List[str]
         """Get mime types."""
         if self.__mime_type:
             return [self.__mime_type]
         return []
 
     def mimeData(self, indexes):
-        # type: (List[QtCore.QModelIndex]) -> Optional[QtCore.QMimeData]
         """Get mime data."""
         if not indexes:
             return None
@@ -439,7 +419,6 @@ class OQListModel(OQObjectMixin, QtCore.QAbstractItemModel):
         return mime_data
 
     def supportedDropActions(self):
-        # type: () -> int
         """Supported drop actions."""
         obj = self.obj()
         if obj is None:
@@ -453,7 +432,6 @@ class OQListModel(OQObjectMixin, QtCore.QAbstractItemModel):
         return actions
 
     def supportedDragActions(self):
-        # type: () -> int
         """Supported drag actions."""
         obj = self.obj()
         if obj is None:
@@ -470,13 +448,12 @@ class OQListModel(OQObjectMixin, QtCore.QAbstractItemModel):
 
     def dropMimeData(
         self,
-        data,  # type: QtCore.QMimeData
-        action,  # type: int
-        row,  # type: int
-        column,  # type: int
-        parent=QtCore.QModelIndex()  # type: QtCore.QModelIndex
+        data,
+        action,
+        row,
+        column,
+        parent=QtCore.QModelIndex()
     ):
-        # type: (...) -> bool
         """Mime data was dropped."""
         obj = self.obj()
         if obj is None:

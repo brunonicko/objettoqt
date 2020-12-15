@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
+"""Models."""
 
-from ._models.list import (
+from .list import (
     OQListModel,
     BaseListModelHeader,
     ListModelHeader,

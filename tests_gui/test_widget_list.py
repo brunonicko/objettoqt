@@ -7,7 +7,7 @@ from objetto.objects import Object, attribute, list_cls
 from objetto.changes import Update
 
 from objettoqt.widgets import OQWidgetList
-from objettoqt.mixins import OQObjectMixin
+from objettoqt.mixin import OQObjectMixin
 
 
 def test_widget_list():
@@ -72,7 +72,7 @@ def test_widget_list():
         ThingWidget, "application/thing_yaml", scrollable=False
     )
     widget_list_b.setMinimumHeight(32)
-    widget_list_b.setMaximumHeight(800)
+    # widget_list_b.setMaximumHeight(800)
     widget_list_b.setObj(lst)
 
     layout.addWidget(widget_list_a)
@@ -84,4 +84,4 @@ def test_widget_list():
 
 
 if __name__ == "__main__":
-    pytest.main()
+    pytest.main([__file__, "-s", "-v"])

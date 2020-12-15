@@ -1,19 +1,15 @@
 # -*- coding: utf-8 -*-
 """Qt list widgets."""
 
-from PySide2 import QtWidgets, QtCore
+from Qt import QtWidgets, QtCore
 from weakref import WeakKeyDictionary, WeakValueDictionary
 from objetto.bases import Phase
 from objetto.changes import ListInsert, ListMove
-from typing import TYPE_CHECKING
 from six.moves import xrange as x_range
 
-from .._mixins.mixin import OQObjectMixin
-from .._models.list import OQListModel
+from ..mixin import OQObjectMixin
+from ..models.list import OQListModel
 from .._views.list import OQListView
-
-if TYPE_CHECKING:
-    from typing import Type, Optional, Tuple, Callable
 
 __all__ = ["OQWidgetList"]
 
@@ -32,13 +28,12 @@ class OQWidgetList(OQObjectMixin, OQListView):
 
     def __init__(
         self,
-        editor_widget_type,  # type: Type[OQObjectMixin]
-        mime_type=None,  # type: Optional[str]
-        scrollable=True,  # type: bool
-        context_menu_callback=None,  # type: Optional[Callable]
+        editor_widget_type,
+        mime_type=None,
+        scrollable=True,
+        context_menu_callback=None,
         **kwargs
     ):
-        # type: (...) -> None
         super(OQWidgetList, self).__init__(**kwargs)
 
         self.__editor_widget_type = editor_widget_type
@@ -52,7 +47,7 @@ class OQWidgetList(OQObjectMixin, OQListView):
         self.installEventFilter(self)
         self.viewport().installEventFilter(self)
 
-        if not scrollable:
+        if not self.__scrollable:
             self.setHorizontalScrollBarPolicy(QtCore.Qt.ScrollBarAlwaysOff)
             self.setVerticalScrollBarPolicy(QtCore.Qt.ScrollBarAlwaysOff)
             self.horizontalScrollBar().valueChanged.connect(self.__fixScrolling)
@@ -185,12 +180,10 @@ class OQWidgetList(OQObjectMixin, OQListView):
         raise RuntimeError(error)
 
     def scrollable(self):
-        # type: () -> bool
         """Get whether this list is scrollable."""
         return self.__scrollable
 
     def editors(self):
-        # type: () -> Tuple[OQObjectMixin, ...]
         """Get editor widgets."""
         obj = self.obj()
         if not obj:

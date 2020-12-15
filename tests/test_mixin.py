@@ -4,7 +4,7 @@ from objetto.applications import Application
 from objetto.objects import Object, attribute
 from objetto.constants import POST
 
-from objettoqt.mixins import OQObjectMixin
+from objettoqt.mixin import OQObjectMixin
 
 
 def test_mixin():
@@ -46,4 +46,4 @@ def test_mixin():
 
 
 if __name__ == "__main__":
-    pytest.main()
+    pytest.main([__file__])

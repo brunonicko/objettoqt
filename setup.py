@@ -19,7 +19,6 @@ setuptools.setup(
         "qualname",
         "six",
         "slotted",
-        "typing; python_version < '3.5'",
     ],
     classifiers=[
         "Intended Audience :: Developers",
@@ -30,6 +29,7 @@ setuptools.setup(
         "Programming Language :: Python :: 3.6",
         "Programming Language :: Python :: 3.7",
         "Programming Language :: Python :: 3.8",
+        "Programming Language :: Python :: 3.9",
         "Programming Language :: Python :: Implementation :: PyPy",
     ],
     python_requires=">=2.7",

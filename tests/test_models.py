@@ -1,16 +1,17 @@
 # -*- coding: utf-8 -*-
 import pytest
-from PySide2 import QtCore
+
+from Qt import QtCore
 
 from objetto.applications import Application
-from objetto.objects import list_obj_cls
+from objetto.objects import list_cls
 
 from objettoqt.models import OQListModel
 
 
 def test_list_model():
     app = Application()
-    lst = list_obj_cls(int)(app, range(10))
+    lst = list_cls(int)(app, range(10))
 
     model = OQListModel()
     model.setObj(lst)
@@ -27,4 +28,4 @@ def test_list_model():
 
 
 if __name__ == "__main__":
-    pytest.main()
+    pytest.main([__file__])

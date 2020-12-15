@@ -1,12 +1,17 @@
 # -*- coding: utf-8 -*-
 
-from PySide2 import QtWidgets, QtCore, QtGui
+from Qt import QtWidgets, QtCore, QtGui
 from objetto.objects import MutableListObject
 
 __all__ = ["OQListViewMixin", "OQListView", "OQTreeListView"]
 
 
-class OQListViewMixin(object):
+# Trick IDEs for auto-completion.
+_object = QtWidgets.QAbstractItemView
+globals()["_object"] = object
+
+
+class OQListViewMixin(_object):
 
     def __init__(self, **kwargs):
         super(OQListViewMixin, self).__init__(**kwargs)
@@ -43,11 +48,10 @@ class OQListViewMixin(object):
 
     def select(
         self,
-        selection,  # type: Union[QtCore.QModelIndex, QtCore.QItemSelection]
-        mode,  # type: int
-        current=None  # type: Optional[QtCore.QModelIndex]
+        selection,
+        mode,
+        current=None
     ):
-        # type: (...) -> None
         """Select and set current."""
         selection_model = self.selectionModel()
         if selection_model is None:
@@ -77,11 +81,10 @@ class OQListViewMixin(object):
             if selected_rows:
                 first_index = min(selected_rows)
                 last_index = max(selected_rows)
-                obj.delete_slice(slice(first_index, last_index + 1))
+                obj.delete(slice(first_index, last_index + 1))
 
     @QtCore.Slot()
     def clearSelection(self):
-        # type: () -> None
         """Clear selection and current."""
         selection_model = self.selectionModel()
         if selection_model is None:
@@ -94,7 +97,6 @@ class OQListViewMixin(object):
         return
 
     def eventFilter(self, obj, event):
-        # type: (QtCore.QObject, Union[QtCore.QEvent, Any]) -> bool
         """Override default behaviors."""
 
         # Object is the view.
@@ -361,7 +363,7 @@ class OQListViewMixin(object):
                             )
                         painter.end()
                         drag.setPixmap(pixmap)
-                        drag.setHotSpot(drag_start_pos)
+                        drag.setHotSpot(drag_start_pos)  # TODO: gradient fade
 
                         # Prepare cursor.
                         move_cursor = QtGui.QCursor(QtCore.Qt.DragMoveCursor)
