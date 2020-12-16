@@ -1,15 +1,14 @@
 # -*- coding: utf-8 -*-
 import pytest
-from PySide2 import QtWidgets
 from objetto.applications import Application
 from objetto.objects import Object, attribute, list_cls
+from Qt import QtWidgets
 
-from objettoqt.models import OQListModel, ListModelHeader
+from objettoqt._models import ListModelHeader, OQListModel
 from objettoqt.views import OQListView
 
 
 def test_list_view():
-
     class Thing(Object):
         name = attribute(str, default="Foo")
 
@@ -19,8 +18,7 @@ def test_list_view():
     lst = list_cls(Thing)(app, initial)
 
     model = OQListModel(
-        headers=(ListModelHeader(title="name"), ),
-        mime_type="application/thing_yaml"
+        headers=(ListModelHeader(title="name"),), mime_type="application/thing_yaml"
     )
     model.setObj(lst)
 

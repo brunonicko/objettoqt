@@ -6,6 +6,7 @@ import sys
 
 # Prepare Qt for docs.
 from Qt import QtCore
+
 if not hasattr(QtCore.Signal, "signatures"):
     QtCore.Signal.signatures = ()
 

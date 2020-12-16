@@ -3,4 +3,8 @@ API Reference
 
 .. toctree::
 
-   mixin
+   widgets
+   views
+   models
+   objects
+   mixins

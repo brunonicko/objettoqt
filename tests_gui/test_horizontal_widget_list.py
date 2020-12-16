@@ -37,7 +37,7 @@ def test_widget_list():
 
         @QtCore.Slot()
         def expand(self):
-            self.ui_label.setContentsMargins(0, 100, 0, 100)
+            self.ui_label.setContentsMargins(100, 0, 100, 0)
 
         def _onObjChanged(self, obj, old_obj, phase):
             if phase is PRE:
@@ -60,21 +60,24 @@ def test_widget_list():
     window = QtWidgets.QMainWindow()
     widget = QtWidgets.QWidget()
     window.setCentralWidget(widget)
-    layout = QtWidgets.QHBoxLayout()
+    layout = QtWidgets.QVBoxLayout()
     widget.setLayout(layout)
 
     widget_list_a = OQWidgetList(None, ThingWidget, "application/thing_yaml")
+    widget_list_a.setFlow(QtWidgets.QListView.LeftToRight)
     widget_list_a.setObj(lst)
 
     widget_list_b = OQWidgetList(None, ThingWidget, "application/thing_yaml")
+    widget_list_b.setFlow(QtWidgets.QListView.LeftToRight)
     widget_list_b.setFitToContents(True)
     widget_list_b.setMinimumFitSize(32)
     widget_list_b.setObj(lst)
 
     widget_list_c = OQWidgetList(None, ThingWidget, "application/thing_yaml")
+    widget_list_c.setFlow(QtWidgets.QListView.LeftToRight)
     widget_list_c.setFitToContents(True)
     widget_list_c.setMinimumFitSize(32)
-    widget_list_c.setMaximumFitSize(800)
+    widget_list_c.setMaximumFitSize(400)
     widget_list_c.setObj(lst)
 
     layout.addWidget(widget_list_a)

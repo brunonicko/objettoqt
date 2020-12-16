@@ -4,6 +4,7 @@ import pytest
 
 def test_import():
     import objettoqt
+
     assert objettoqt
 
 

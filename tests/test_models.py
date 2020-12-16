@@ -1,12 +1,10 @@
 # -*- coding: utf-8 -*-
 import pytest
-
-from Qt import QtCore
-
 from objetto.applications import Application
 from objetto.objects import list_cls
+from Qt import QtCore
 
-from objettoqt.models import OQListModel
+from objettoqt._models import OQListModel
 
 
 def test_list_model():

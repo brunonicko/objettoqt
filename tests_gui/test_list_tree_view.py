@@ -1,26 +1,31 @@
 # -*- coding: utf-8 -*-
 import pytest
-from Qt import QtWidgets
+
+from six import string_types, integer_types
 from objetto.applications import Application
 from objetto.objects import Object, attribute, list_cls
+from Qt import QtWidgets
 
-from objettoqt.models import OQListModel, ListModelHeader
+from objettoqt._models import ListModelHeader, OQListModel
 from objettoqt.views import OQTreeListView
 
 
 def test_list_tree_view():
-
     class Thing(Object):
-        name = attribute(str, default="Foo")
+        name = attribute(string_types, default="Foo")
+        points = attribute(integer_types, default=1)
 
     qt_app = QtWidgets.QApplication([])
     app = Application()
-    initial = (Thing(app, name=str(i)) for i in range(3))
+    initial = (Thing(app, name=str(i), points=i + 3) for i in range(5))
     lst = list_cls(Thing)(app, initial)
 
     model = OQListModel(
-        headers=(ListModelHeader(title="name"), ),
-        mime_type="application/thing_yaml"
+        headers=(
+            ListModelHeader(title="name"),
+            ListModelHeader(title="points"),
+        ),
+        mime_type="application/thing_yaml",
     )
     model.setObj(lst)
 

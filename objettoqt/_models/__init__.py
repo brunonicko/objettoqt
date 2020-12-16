@@ -2,15 +2,13 @@
 """Models."""
 
 from .list import (
-    OQListModel,
-    BaseListModelHeader,
+    AbstractListModelHeader,
     ListModelHeader,
-    DefaultListModelHeader,
+    OQListModel,
 )
 
 __all__ = [
     "OQListModel",
-    "BaseListModelHeader",
+    "AbstractListModelHeader",
     "ListModelHeader",
-    "DefaultListModelHeader",
 ]

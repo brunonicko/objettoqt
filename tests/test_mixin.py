@@ -1,10 +1,10 @@
 # -*- coding: utf-8 -*-
 import pytest
 from objetto.applications import Application
-from objetto.objects import Object, attribute
 from objetto.constants import POST
+from objetto.objects import Object, attribute
 
-from objettoqt.mixin import OQObjectMixin
+from objettoqt.mixins import OQObjectMixin
 
 
 def test_mixin():
