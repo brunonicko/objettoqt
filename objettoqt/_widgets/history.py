@@ -23,7 +23,7 @@ class _OQHistoryWidgetModel(OQListModel):
             history = changes._parent
             if history is not None:
                 if role == QtCore.Qt.ForegroundRole:
-                    if index.row() > history.index:
+                    if index.row() > history.index:  # TODO: use system colors
                         return QtGui.QBrush(QtGui.QColor(128, 128, 138, 100))
                     elif history.index == index.row():
                         return QtGui.QBrush(QtGui.QColor(255, 255, 255, 255))
