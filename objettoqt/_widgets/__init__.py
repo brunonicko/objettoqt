@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
 """Widgets."""
 
+from .history import OQHistoryWidget, OQHistoryWidgetDefaultHeader
+from .list import OQWidgetList, OQWidgetListDefaultHeader
 from .widget import OQWidget
-from .list import OQWidgetListDefaultHeader, OQWidgetList
-from .history import OQHistoryWidgetDefaultHeader, OQHistoryWidget
 
 __all__ = [
     "OQWidget",

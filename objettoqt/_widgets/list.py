@@ -3,22 +3,22 @@
 
 from weakref import WeakKeyDictionary, WeakValueDictionary
 
-from objetto import PRE, POST
-from objetto.objects import ListObject
+from objetto import POST, PRE
 from objetto.changes import ListInsert, ListMove
-from objetto.utils.type_checking import assert_is_subclass
+from objetto.objects import ListObject
 from objetto.utils.reraise_context import ReraiseContext
+from objetto.utils.type_checking import assert_is_subclass
 from Qt import QtCore, QtWidgets
 from six.moves import xrange as x_range
 
 from .._mixins import OQWidgetMixin
+from .._models.list import ListModelHeader, OQListModel
 from .._views.list import OQListView
-from .._models.list import OQListModel, ListModelHeader
 
 __all__ = ["OQWidgetListDefaultHeader", "OQWidgetList"]
 
 
-_MAXIMUM_SIZE = ((1 << 24) - 1)
+_MAXIMUM_SIZE = (1 << 24) - 1
 
 
 class OQWidgetListDefaultHeader(ListModelHeader):

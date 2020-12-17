@@ -3,6 +3,7 @@ import pytest
 from objetto.applications import Application
 from objetto.constants import POST
 from objetto.objects import Object, attribute
+from Qt import QtCore
 
 from objettoqt.mixins import OQObjectMixin
 
@@ -11,7 +12,7 @@ def test_mixin():
     class Thing(Object):
         name = attribute(str, default="Foo")
 
-    class DummyQObject(OQObjectMixin):
+    class DummyQObject(OQObjectMixin, QtCore.QObject):
         received = None
         changed = None
 

@@ -2,11 +2,11 @@
 """Widgets."""
 
 from ._widgets import (
-    OQWidget,
-    OQWidgetListDefaultHeader,
-    OQWidgetList,
-    OQHistoryWidgetDefaultHeader,
     OQHistoryWidget,
+    OQHistoryWidgetDefaultHeader,
+    OQWidget,
+    OQWidgetList,
+    OQWidgetListDefaultHeader,
 )
 
 __all__ = [

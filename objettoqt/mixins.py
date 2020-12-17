@@ -2,10 +2,10 @@
 """Mix-in classes for `Qt` types."""
 
 from ._mixins import (
-    OQObjectMixin,
-    OQWidgetMixin,
     OQAbstractItemModelMixin,
     OQAbstractItemViewMixin,
+    OQObjectMixin,
+    OQWidgetMixin,
 )
 from ._views import OQListViewMixin
 

@@ -1,0 +1,2 @@
+PySide; python_version < "3.5"
+PySide2; python_version >= "3.5"

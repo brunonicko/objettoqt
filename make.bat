@@ -41,9 +41,6 @@ goto end
 
 :tests
 python -m pytest tests
-python -m pytest objettoqt --doctest-modules
-python -m pytest docs --doctest-glob="*.rst"
-python -m pytest README.rst --doctest-glob="*.rst"
 goto end
 
 :format

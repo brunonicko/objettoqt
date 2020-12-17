@@ -7,8 +7,8 @@ from weakref import WeakKeyDictionary, ref
 from objetto import POST, PRE
 from objetto.bases import BaseObject
 from objetto.observers import ActionObserver
-from objetto.utils.type_checking import assert_is_instance
 from objetto.utils.reraise_context import ReraiseContext
+from objetto.utils.type_checking import assert_is_instance
 from Qt import QtCore, QtWidgets
 
 __all__ = [
@@ -86,7 +86,7 @@ class OQObjectMixin(_object):
 
     :param obj: New object (or None).
     :type obj: objetto.bases.BaseObject or None
-    
+
     :param old_obj: Old object (or None).
     :type old_obj: objetto.bases.BaseObject or None
 
@@ -97,9 +97,9 @@ class OQObjectMixin(_object):
     actionReceived = QtCore.Signal(object, object)
     """
     **signal**
-    
+
     Emitted when an action is received.
-    
+
     :param action: Action.
     :type action: objetto.objects.Action
 
@@ -110,18 +110,18 @@ class OQObjectMixin(_object):
     QBase = QtCore.QObject
     """
     **read-only class attribute**
-    
+
     Minimum `Qt` base requirement.
-    
+
     :type: type[QtCore.QObject]
     """
 
     OBase = BaseObject
     """
     **read-only class attribute**
-    
+
     Minimum `objetto` object base requirement.
-    
+
     :type: type[objetto.bases.BaseObject]
     """
 
@@ -319,7 +319,7 @@ class OQAbstractItemModelMixin(OQObjectMixin, _object):
     QBase = QtCore.QAbstractItemModel
     """
     **read-only class attribute**
-    
+
     Minimum `Qt` base requirement.
 
     :type: type[QtCore.QAbstractItemModel]
@@ -399,7 +399,7 @@ class OQAbstractItemViewMixin(OQWidgetMixin, _object):
     QBase = QtWidgets.QAbstractItemView
     """
     **read-only class attribute**
-    
+
     Minimum `Qt` base requirement.
 
     :type: type[QtWidgets.QAbstractItemView]

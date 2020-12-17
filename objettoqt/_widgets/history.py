@@ -1,13 +1,13 @@
 # -*- coding: utf-8 -*-
 """History widget."""
 
-from Qt import QtCore, QtWidgets, QtGui
-from six import string_types
-from objetto import PRE, POST, data_attribute
+from objetto import POST, PRE, data_attribute
 from objetto.changes import Update
 from objetto.history import HistoryObject
+from Qt import QtCore, QtGui, QtWidgets
+from six import string_types
 
-from .._models import OQListModel, ListModelHeader
+from .._models import ListModelHeader, OQListModel
 from .._views import OQTreeListView
 
 __all__ = ["OQHistoryWidgetDefaultHeader", "OQHistoryWidget"]
@@ -21,17 +21,17 @@ class OQHistoryWidgetDefaultHeader(ListModelHeader):
       - :class:`objettoqt.models.ListModelHeader`
     """
 
-    title = data_attribute(string_types, default="name")
+    title = data_attribute(string_types, subtypes=True, default="name")
     """
     Title.
-    
+
     :type: str
     """
 
-    fallback = data_attribute(string_types, default="---")
+    fallback = data_attribute(string_types, subtypes=True, default="---")
     """
     Fallback value.
-    
+
     :type: str
     """
 
@@ -103,14 +103,7 @@ objettoqt.models.AbstractListModelHeader or str] or None
     :type: type[objetto.history.HistoryObject]
     """
 
-    def __init__(
-        self,
-        parent=None,
-        headers=None,
-        mime_type=None,
-        *args,
-        **kwargs
-    ):
+    def __init__(self, parent=None, headers=None, mime_type=None, *args, **kwargs):
         super(OQHistoryWidget, self).__init__(parent=parent, *args, **kwargs)
 
         # Default headers.
@@ -153,7 +146,7 @@ objettoqt.models.AbstractListModelHeader or str] or None
                     last_index = len(history.changes) - 1
                     self.__model.dataChanged.emit(
                         self.__model.index(first_index, 0, QtCore.QModelIndex()),
-                        self.__model.index(last_index, 0, QtCore.QModelIndex())
+                        self.__model.index(last_index, 0, QtCore.QModelIndex()),
                     )
 
     @QtCore.Slot(QtCore.QModelIndex)

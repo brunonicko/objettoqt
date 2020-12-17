@@ -1,10 +1,9 @@
 # -*- coding: utf-8 -*-
 import pytest
-
-from six import string_types, integer_types
 from objetto.applications import Application
 from objetto.objects import Object, attribute, list_cls
 from Qt import QtWidgets
+from six import integer_types, string_types
 
 from objettoqt._models import ListModelHeader, OQListModel
 from objettoqt.views import OQTreeListView

@@ -28,8 +28,8 @@ class _OQListViewMixinEventFilter(QtCore.QObject):
 
             # Pressed delete, is enabled and has focus, delete selected.
             if (
-                list_view.deleteEnabled() and
-                event.type() == QtCore.QEvent.KeyPress
+                list_view.deleteEnabled()
+                and event.type() == QtCore.QEvent.KeyPress
                 and event.key() == QtCore.Qt.Key_Delete
                 and list_view.hasFocus()
                 and list_view.isEnabled()
@@ -215,9 +215,7 @@ class OQListViewMixin(OQAbstractItemViewMixin, _object):
 
         :raises ValueError: Unsupported selection behavior provided.
         """
-        allowed_behaviors = (
-            QtWidgets.QAbstractItemView.SelectRows,
-        )
+        allowed_behaviors = (QtWidgets.QAbstractItemView.SelectRows,)
         if behavior not in allowed_behaviors:
             error = "selection behavior {} is not supported".format(behavior)
             raise ValueError(error)

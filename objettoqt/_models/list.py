@@ -3,7 +3,7 @@
 
 from abc import abstractmethod
 
-from objetto import PRE, POST, Application, InteractiveData, data_attribute
+from objetto import POST, PRE, Application, InteractiveData, data_attribute
 from objetto.bases import BaseObject
 from objetto.changes import ListDelete, ListInsert, ListMove, ListUpdate
 from objetto.exceptions import SerializationError
@@ -36,17 +36,17 @@ class AbstractListModelHeader(InteractiveData):
       - :class:`objetto.InteractiveData`
     """
 
-    title = data_attribute(string_types, default="")
+    title = data_attribute(string_types, subtypes=True, default="")
     """
     Title.
-    
+
     :type: str
     """
 
     metadata = data_attribute(default=None)
     """
     Metadata.
-    
+
     :type: str
     """
 
@@ -111,10 +111,10 @@ class ListModelHeader(AbstractListModelHeader):
       - :class:`objettoqt.models.AbstractListModelHeader`
     """
 
-    fallback = data_attribute(string_types, default="")
+    fallback = data_attribute(string_types, subtypes=True, default="")
     """
     Fallback value.
-    
+
     :type: str
     """
 
@@ -123,7 +123,7 @@ class ListModelHeader(AbstractListModelHeader):
     )
     """
     Default flags.
-    
+
     :type: QtCore.Qt.ItemFlag
     """
 
@@ -240,7 +240,7 @@ class OQListModel(OQAbstractItemModelMixin, QtCore.QAbstractItemModel):
     OBase = ListObject
     """
     **read-only class attribute**
-    
+
     Minimum `objetto` object base requirement.
 
     :type: type[objetto.objects.ListObject]
@@ -823,7 +823,7 @@ objettoqt.models.AbstractListModelHeader or str] or None
 
         # Prevent dropping on top of an item (only allows in-between items).
         while parent.isValid():
-            row, column, parent = parent.row(), parent.column(), parent.parent()
+            row, _, parent = parent.row(), parent.column(), parent.parent()
 
         if row == -1:
             row = len(obj)

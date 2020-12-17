@@ -9,9 +9,6 @@ environment:
 	pip install -r dev_requirements.txt --upgrade
 tests:
 	python -m pytest tests
-	python -m pytest objettoqt --doctest-modules
-	python -m pytest docs --doctest-glob="*.rst"
-	python -m pytest README.rst --doctest-glob="*.rst"
 format:
 	autoflake --remove-all-unused-imports --in-place --recursive .\objettoqt
 	autoflake --remove-all-unused-imports --in-place --recursive .\tests
