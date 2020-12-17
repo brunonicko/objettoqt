@@ -1,0 +1,3 @@
+PySide2
+sphinx-rtd-theme
+sphinx-qt-documentation
