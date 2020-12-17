@@ -1,0 +1,4 @@
+six
+objetto
+pyyaml
+Qt.py
