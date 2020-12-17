@@ -1,4 +1,6 @@
-from ._widgets.list import OQWidgetList
-from ._widgets.widget import OQWidget
+# -*- coding: utf-8 -*-
+"""Widgets."""
 
-__all__ = ["OQWidget", "OQWidgetList"]
+from ._widgets import OQWidgetList, OQWidget, OQHistoryWidget
+
+__all__ = ["OQWidget", "OQWidgetList", "OQHistoryWidget"]

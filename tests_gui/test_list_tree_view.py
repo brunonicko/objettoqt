@@ -17,7 +17,7 @@ def test_list_tree_view():
 
     qt_app = QtWidgets.QApplication([])
     app = Application()
-    initial = (Thing(app, name=str(i), points=i + 3) for i in range(5))
+    initial = (Thing(app, name=str(i), points=i + 3) for i in range(15))
     lst = list_cls(Thing)(app, initial)
 
     model = OQListModel(

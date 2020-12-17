@@ -26,6 +26,11 @@ class _OQWidgetListModel(OQListModel):
         view = self.parent()
         if isinstance(view, OQWidgetList):
             view.setObj(obj)
+        else:
+            error = "parent for '{}' is not the expected view".format(
+                type(self).__name__
+            )
+            raise RuntimeError(error)
 
     def data(self, *args, **kwargs):
         return
@@ -79,7 +84,7 @@ class OQWidgetList(OQListView):
         # Internal attributes.
         self.__editor_widget_type = editor_widget_type
         self.__delegate = _WidgetListDelegate(parent=self)
-        self.__model = _OQWidgetListModel(mime_type=mime_type, parent=self)
+        self.__model = _OQWidgetListModel(parent=self, mime_type=mime_type)
         self.__fit_to_contents = False
         self.__minimum_fit_size = 0
         self.__maximum_fit_size = _MAXIMUM_SIZE

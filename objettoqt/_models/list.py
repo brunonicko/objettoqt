@@ -91,7 +91,7 @@ class ListModelHeader(AbstractListModelHeader):
     :attr:`objettoqt.models.AbstractListModelHeader.title` as the attribute name that
     will be queried from the source object at the row.
 
-    An empty string will be returned if a title is provided and the object at
+    The fallback value will be returned if a title is provided and the object at
     the row does not have an attribute with the same name as the title.
 
     In the case an empty title is provided (default behavior), a string representation
@@ -102,6 +102,9 @@ class ListModelHeader(AbstractListModelHeader):
     Inherits from:
       - :class:`objettoqt.models.AbstractListModelHeader`
     """
+
+    fallback = data_attribute(string_types, default="")
+    """Fallback value."""
 
     default_flags = data_attribute(
         default=QtCore.Qt.ItemIsEnabled | QtCore.Qt.ItemIsSelectable
@@ -144,7 +147,7 @@ class ListModelHeader(AbstractListModelHeader):
                 sub_obj = obj[row]
                 title = self.title
                 if title:
-                    return str(getattr(sub_obj, title, ""))
+                    return str(getattr(sub_obj, title, self.fallback))
                 else:
                     return str(sub_obj)
             elif role == QtCore.Qt.UserRole:
@@ -182,7 +185,7 @@ class OQListModel(OQAbstractItemModelMixin, QtCore.QAbstractItemModel):
     :param parent: Parent.
     :type parent: QtCore.QObject or None
 
-    :param headers: Headers.
+    :param headers: Headers (or None for default).
     :type headers: tuple[objettoqt.models.AbstractListModelHeader] or None
 
     :param mime_type: Mime type.

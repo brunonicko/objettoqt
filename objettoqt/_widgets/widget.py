@@ -1,4 +1,6 @@
 # -*- coding: utf-8 -*-
+"""Widget."""
+
 from Qt import QtWidgets
 
 from .._mixins import OQWidgetMixin
