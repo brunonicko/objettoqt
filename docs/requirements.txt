@@ -1,3 +1,7 @@
+six
+objetto
+pyyaml
+Qt.py
 PySide2
 sphinx-rtd-theme
 sphinx-qt-documentation
