@@ -13,27 +13,47 @@ from six.moves import xrange as x_range
 
 from .._mixins import OQWidgetMixin
 from .._views.list import OQListView
-from .._models.list import OQListModel
+from .._models.list import OQListModel, ListModelHeader
 
-__all__ = ["OQWidgetList"]
+__all__ = ["OQWidgetListDefaultHeader", "OQWidgetList"]
 
 
 _MAXIMUM_SIZE = ((1 << 24) - 1)
 
 
+class OQWidgetListDefaultHeader(ListModelHeader):
+    """
+    Default header for :class:`objettoqt.widgets.OQWidgetList`.
+
+    Inherits from:
+      - :class:`objettoqt.models.ListModelHeader`
+    """
+
+    def data(self, obj, row, role=QtCore.Qt.DisplayRole):
+        """
+        Returns `None` for the :attr:`QtCore.Qt.DisplayRole`.
+
+        :param obj: List object.
+        :type obj: objetto.objects.ListObject
+
+        :param row: Row.
+        :type row: int
+
+        :param role: Role.
+        :type role: QtCore.Qt.ItemDataRole
+
+        :return: Data.
+        :rtype: str or objetto.bases.BaseObject
+        """
+        if role == QtCore.Qt.DisplayRole:
+            return
+        return super(OQWidgetListDefaultHeader, self).data(obj, row, role=role)
+
+
 class _OQWidgetListModel(OQListModel):
     def setObj(self, obj):
-        view = self.parent()
-        if isinstance(view, OQWidgetList):
-            view.setObj(obj)
-        else:
-            error = "parent for '{}' is not the expected view".format(
-                type(self).__name__
-            )
-            raise RuntimeError(error)
-
-    def data(self, *args, **kwargs):
-        return
+        error = "can't call 'setObj' on internal model, use the widget's method instead"
+        raise RuntimeError(error)
 
 
 class OQWidgetList(OQListView):
@@ -50,6 +70,10 @@ class OQWidgetList(OQListView):
 
     :param editor_widget_type: Editor widget class for items.
     :type editor_widget_type: type[objettoqt.mixins.OQWidgetMixin]
+
+    :param header: Header (or None to use \
+:class:`objettoqt.widgets.OQWidgetListDefaultHeader`).
+    :type header: objettoqt.models.AbstractListModelHeader or None
 
     :param mime_type: Mime type.
     :type mime_type: str or None
@@ -71,6 +95,7 @@ class OQWidgetList(OQListView):
         self,
         parent=None,
         editor_widget_type=None,
+        header=None,
         mime_type=None,
         *args,
         **kwargs,
@@ -81,10 +106,18 @@ class OQWidgetList(OQListView):
         with ReraiseContext(TypeError, "didn't provide 'editor_widget_type' parameter"):
             assert_is_subclass(editor_widget_type, OQWidgetMixin)
 
+        # Default header.
+        if header is None:
+            headers = (OQWidgetListDefaultHeader(),)
+        else:
+            headers = (header,)
+
         # Internal attributes.
         self.__editor_widget_type = editor_widget_type
         self.__delegate = _WidgetListDelegate(parent=self)
-        self.__model = _OQWidgetListModel(parent=self, mime_type=mime_type)
+        self.__model = _OQWidgetListModel(
+            parent=self, headers=headers, mime_type=mime_type
+        )
         self.__fit_to_contents = False
         self.__minimum_fit_size = 0
         self.__maximum_fit_size = _MAXIMUM_SIZE
@@ -175,7 +208,7 @@ class OQWidgetList(OQListView):
 
         if phase is PRE:
             super(_OQWidgetListModel, self.__model).setObj(None)
-        elif phase is POST:
+        elif phase is POST and obj is not None:
             super(_OQWidgetListModel, self.__model).setObj(obj)
             for i, value in enumerate(obj):
                 self.openPersistentEditor(self.__model.index(i))

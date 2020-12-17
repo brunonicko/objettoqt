@@ -30,3 +30,19 @@ Widgets
       .. automethod:: objettoqt.widgets.OQWidgetList.resizeEvent
       .. automethod:: objettoqt.widgets.OQWidgetList.editorWidgetType
       .. automethod:: objettoqt.widgets.OQWidgetList.mimeType
+
+   .. autoclass:: objettoqt.widgets.OQWidgetListDefaultHeader
+
+      .. automethod:: objettoqt.widgets.OQWidgetListDefaultHeader.data
+
+   .. autoclass:: objettoqt.widgets.OQHistoryWidget
+
+   .. autoclass:: objettoqt.widgets.OQHistoryWidgetDefaultHeader
+
+      .. autoattribute:: objettoqt.widgets.OQHistoryWidgetDefaultHeader.title
+         :annotation: :  Data Attribute
+
+      .. autoattribute:: objettoqt.widgets.OQHistoryWidgetDefaultHeader.fallback
+         :annotation: :  Data Attribute
+
+      .. automethod:: objettoqt.widgets.OQHistoryWidgetDefaultHeader.data

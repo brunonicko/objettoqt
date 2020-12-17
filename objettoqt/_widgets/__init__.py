@@ -2,11 +2,13 @@
 """Widgets."""
 
 from .widget import OQWidget
-from .list import OQWidgetList
-from .history import OQHistoryWidget
+from .list import OQWidgetListDefaultHeader, OQWidgetList
+from .history import OQHistoryWidgetDefaultHeader, OQHistoryWidget
 
 __all__ = [
     "OQWidget",
+    "OQWidgetListDefaultHeader",
     "OQWidgetList",
+    "OQHistoryWidgetDefaultHeader",
     "OQHistoryWidget",
 ]

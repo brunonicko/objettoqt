@@ -1,6 +1,18 @@
 # -*- coding: utf-8 -*-
 """Widgets."""
 
-from ._widgets import OQWidgetList, OQWidget, OQHistoryWidget
+from ._widgets import (
+    OQWidget,
+    OQWidgetListDefaultHeader,
+    OQWidgetList,
+    OQHistoryWidgetDefaultHeader,
+    OQHistoryWidget,
+)
 
-__all__ = ["OQWidget", "OQWidgetList", "OQHistoryWidget"]
+__all__ = [
+    "OQWidget",
+    "OQWidgetListDefaultHeader",
+    "OQWidgetList",
+    "OQHistoryWidgetDefaultHeader",
+    "OQHistoryWidget",
+]

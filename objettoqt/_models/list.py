@@ -37,10 +37,18 @@ class AbstractListModelHeader(InteractiveData):
     """
 
     title = data_attribute(string_types, default="")
-    """Title."""
+    """
+    Title.
+    
+    :type: str
+    """
 
     metadata = data_attribute(default=None)
-    """Metadata."""
+    """
+    Metadata.
+    
+    :type: str
+    """
 
     def flags(self, obj, row):
         """
@@ -104,12 +112,20 @@ class ListModelHeader(AbstractListModelHeader):
     """
 
     fallback = data_attribute(string_types, default="")
-    """Fallback value."""
+    """
+    Fallback value.
+    
+    :type: str
+    """
 
     default_flags = data_attribute(
         default=QtCore.Qt.ItemIsEnabled | QtCore.Qt.ItemIsSelectable
     )
-    """Default flags."""
+    """
+    Default flags.
+    
+    :type: QtCore.Qt.ItemFlag
+    """
 
     def flags(self, obj, row):
         """

@@ -35,4 +35,24 @@ Models
       .. automethod:: objettoqt.models.OQListModel.supportedDragActions
       .. automethod:: objettoqt.models.OQListModel.dropMimeData
 
+   .. autoclass:: objettoqt.models.AbstractListModelHeader
+
+      .. autoattribute:: objettoqt.models.AbstractListModelHeader.title
+         :annotation: :  Data Attribute
+
+      .. autoattribute:: objettoqt.models.AbstractListModelHeader.metadata
+         :annotation: :  Data Attribute
+
+      .. automethod:: objettoqt.models.AbstractListModelHeader.flags
+      .. automethod:: objettoqt.models.AbstractListModelHeader.data
+
    .. autoclass:: objettoqt.models.ListModelHeader
+
+      .. autoattribute:: objettoqt.models.ListModelHeader.fallback
+         :annotation: :  Data Attribute
+
+      .. autoattribute:: objettoqt.models.ListModelHeader.default_flags
+         :annotation: :  Data Attribute
+
+      .. automethod:: objettoqt.models.ListModelHeader.flags
+      .. automethod:: objettoqt.models.ListModelHeader.data
