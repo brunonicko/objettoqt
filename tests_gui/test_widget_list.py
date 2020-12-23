@@ -63,15 +63,21 @@ def test_widget_list():
     layout = QtWidgets.QHBoxLayout()
     widget.setLayout(layout)
 
-    widget_list_a = OQWidgetList(None, ThingWidget, "application/thing_yaml")
+    widget_list_a = OQWidgetList(
+        editor_widget_type=ThingWidget, mime_type="application/thing_yaml"
+    )
     widget_list_a.setObj(lst)
 
-    widget_list_b = OQWidgetList(None, ThingWidget, "application/thing_yaml")
+    widget_list_b = OQWidgetList(
+        editor_widget_type=ThingWidget, mime_type="application/thing_yaml"
+    )
     widget_list_b.setFitToContents(True)
     widget_list_b.setMinimumFitSize(32)
     widget_list_b.setObj(lst)
 
-    widget_list_c = OQWidgetList(None, ThingWidget, "application/thing_yaml")
+    widget_list_c = OQWidgetList(
+        editor_widget_type=ThingWidget, mime_type="application/thing_yaml"
+    )
     widget_list_c.setFitToContents(True)
     widget_list_c.setMinimumFitSize(32)
     widget_list_c.setMaximumFitSize(800)
