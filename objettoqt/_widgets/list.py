@@ -132,9 +132,17 @@ class OQWidgetList(OQListView):
         if self.__fit_to_contents:
 
             # Prepare initial information.
-            size = 3
+            size = 0
             maximum_size = self.__maximum_fit_size
             flow = self.flow()
+            spacing = self.spacing()
+
+            # Add margin to initial size.
+            margins = self.contentsMargins()
+            if flow == QtWidgets.QListView.LeftToRight:
+                size += margins.left() + margins.right()
+            else:
+                size += margins.top() + margins.bottom()
 
             # For every widget.
             for widget in self.editors() or ():
@@ -145,6 +153,7 @@ class OQWidgetList(OQListView):
                     size += widget_size_hint.width()
                 else:
                     size += widget_size_hint.height()
+                size += 2 * spacing
 
                 # Exceeded maximum fit size, clamp and stop adding.
                 if maximum_size is not None and size > maximum_size:
