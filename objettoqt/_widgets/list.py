@@ -121,12 +121,22 @@ class OQWidgetList(OQListView):
         self.__fit_to_contents = False
         self.__minimum_fit_size = 0
         self.__maximum_fit_size = _MAXIMUM_SIZE
+        self.__update_layout_timer = QtCore.QTimer()
+
+        # Update layout timer.
+        self.__update_layout_timer.setSingleShot(True)
+        try:
+            self.__update_layout_timer.setTimerType(QtCore.Qt.CoarseTimer)
+        except AttributeError:
+            pass
+        self.__update_layout_timer.timeout.connect(self.__update_layout)
 
         # Set item delegate and internal model.
         super(OQWidgetList, self).setItemDelegate(self.__delegate)
         super(OQWidgetList, self).setModel(self.__model)
 
-    def __updateLayout__(self):
+    @QtCore.Slot()
+    def __update_layout(self):
 
         # Fit to contents, need to calculate fixed size.
         if self.__fit_to_contents:
@@ -190,6 +200,14 @@ class OQWidgetList(OQListView):
 
         # Emit layout changed signal.
         self.__model.layoutChanged.emit()
+
+    def __updateLayout__(self):
+
+        # De-bounce.
+        if self.__fit_to_contents:
+            self.__update_layout_timer.start(10)
+        else:
+            self.__update_layout_timer.start(1)
 
     @QtCore.Slot()
     def __fixScrolling(self):

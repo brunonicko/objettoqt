@@ -734,7 +734,7 @@ objettoqt.models.AbstractListModelHeader or str] or None
                 item = obj[row]
                 if isinstance(item, BaseObject):
                     try:
-                        serialized_obj = item.serialize()
+                        serialized_obj = obj.serialize_value(item)
                     except SerializationError:
                         serialized_obj = item
                 else:

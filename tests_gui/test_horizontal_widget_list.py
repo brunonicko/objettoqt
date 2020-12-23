@@ -10,10 +10,11 @@ from objettoqt.mixins import OQWidgetMixin
 from objettoqt.widgets import OQWidgetList
 
 
-def test_widget_list():
-    class Thing(Object):
-        name = attribute(str, default="Foo")
+class Thing(Object):
+    name = attribute(str, default="Foo")
 
+
+def test_widget_list():
     class ThingWidget(OQWidgetMixin, QtWidgets.QWidget):
         def __init__(self, **kwargs):
             super(ThingWidget, self).__init__(**kwargs)
@@ -55,7 +56,7 @@ def test_widget_list():
     qt_app = QtWidgets.QApplication([])
     app = Application()
     initial = (Thing(app, name=str(i)) for i in range(10))
-    lst = list_cls(Thing)(app, initial)
+    lst = list_cls(Thing, subtypes=True)(app, initial)
 
     window = QtWidgets.QMainWindow()
     widget = QtWidgets.QWidget()
@@ -63,17 +64,23 @@ def test_widget_list():
     layout = QtWidgets.QVBoxLayout()
     widget.setLayout(layout)
 
-    widget_list_a = OQWidgetList(None, ThingWidget, "application/thing_yaml")
+    widget_list_a = OQWidgetList(
+        editor_widget_type=ThingWidget, mime_type="application/thing_yaml"
+    )
     widget_list_a.setFlow(QtWidgets.QListView.LeftToRight)
     widget_list_a.setObj(lst)
 
-    widget_list_b = OQWidgetList(None, ThingWidget, "application/thing_yaml")
+    widget_list_b = OQWidgetList(
+        editor_widget_type=ThingWidget, mime_type="application/thing_yaml"
+    )
     widget_list_b.setFlow(QtWidgets.QListView.LeftToRight)
     widget_list_b.setFitToContents(True)
     widget_list_b.setMinimumFitSize(32)
     widget_list_b.setObj(lst)
 
-    widget_list_c = OQWidgetList(None, ThingWidget, "application/thing_yaml")
+    widget_list_c = OQWidgetList(
+        editor_widget_type=ThingWidget, mime_type="application/thing_yaml"
+    )
     widget_list_c.setFlow(QtWidgets.QListView.LeftToRight)
     widget_list_c.setFitToContents(True)
     widget_list_c.setMinimumFitSize(32)
