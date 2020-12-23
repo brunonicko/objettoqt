@@ -202,6 +202,8 @@ class OQListViewMixin(OQAbstractItemViewMixin, _object):
             error = "selection mode {} is not supported".format(mode)
             raise ValueError(error)
         super(OQListViewMixin, self).setSelectionMode(mode)
+        if mode == QtWidgets.QAbstractItemView.NoSelection:
+            self.clearSelection()
 
     def setSelectionBehavior(self, behavior):
         """
@@ -298,6 +300,10 @@ class OQListViewMixin(OQAbstractItemViewMixin, _object):
         :param current: Current (None will clear current).
         :type current: QtCore.QModelIndex or None
         """
+        if self.selectionMode() == QtWidgets.QAbstractItemView.NoSelection:
+            self.clearSelection()
+            return
+
         selection_model = self.selectionModel()
         if selection_model is None:
             return
