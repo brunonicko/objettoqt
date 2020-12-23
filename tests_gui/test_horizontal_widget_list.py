@@ -15,7 +15,6 @@ class Thing(Object):
 
 
 def test_widget_list():
-
     class ThingWidget(OQWidgetMixin, QtWidgets.QWidget):
         def __init__(self, **kwargs):
             super(ThingWidget, self).__init__(**kwargs)
