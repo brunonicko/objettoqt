@@ -5,7 +5,7 @@ with open("README.rst", "r") as fh:
 
 setuptools.setup(
     name="objettoqt",
-    version="0.1.4",
+    version="0.1.5",
     author="Bruno Nicko",
     author_email="brunonicko@gmail.com",
     description="Utilities to use Objetto with Qt",

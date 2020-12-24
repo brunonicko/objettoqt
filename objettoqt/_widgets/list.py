@@ -141,6 +141,9 @@ class OQWidgetList(OQListView):
         # Fit to contents, need to calculate fixed size.
         if self.__fit_to_contents:
 
+            # Process events.
+            QtWidgets.QApplication.instance().processEvents()
+
             # Prepare initial information.
             size = 0
             maximum_size = self.__maximum_fit_size
@@ -202,12 +205,10 @@ class OQWidgetList(OQListView):
         self.__model.layoutChanged.emit()
 
     def __updateLayout__(self):
+        """Update layout."""
 
-        # De-bounce.
-        if self.__fit_to_contents:
-            self.__update_layout_timer.start(10)
-        else:
-            self.__update_layout_timer.start(1)
+        # De-bounce (prevents being called too many times).
+        self.__update_layout_timer.start(10)
 
     @QtCore.Slot()
     def __fixScrolling(self):
