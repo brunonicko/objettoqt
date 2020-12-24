@@ -120,46 +120,64 @@ class OQListViewMixin(OQAbstractItemViewMixin, _object):
         model = self.model()
         if not self.dragEnabled() or model is None:
             return
+        model_obj = model.obj()
+        if model_obj is None:
+            return
 
         # Get selected indexes.
         selected_indexes = self.selectedIndexes()
         if not selected_indexes:
             return
-        sorted_indexes = sorted(selected_indexes, key=lambda i: i.row())
-        first_index, last_index = sorted_indexes[0], sorted_indexes[-1]
-        selection = QtCore.QItemSelection(first_index, last_index)
 
-        # Get mime data.
-        mime_data = model.mimeData(selected_indexes)
-        if mime_data is None:
-            return
+        # In a write context.
+        with model_obj.app.write_context():
 
-        # Get drag actions from the model.
-        drag_actions = model.supportedDragActions()
+            # Get indexes.
+            sorted_indexes = sorted(selected_indexes, key=lambda i: i.row())
+            first_index, last_index = sorted_indexes[0], sorted_indexes[-1]
+            selection = QtCore.QItemSelection(first_index, last_index)
 
-        # Start drag.
-        viewport = self.viewport()
-        drag = QtGui.QDrag(viewport)
-        drag.setMimeData(mime_data)
+            # Get mime data.
+            mime_data = model.mimeData(selected_indexes)
+            if mime_data is None:
+                return
 
-        # Prepare pixmap.
-        pixmap = QtGui.QPixmap(viewport.visibleRegion().boundingRect().size())
-        pixmap.fill(QtCore.Qt.transparent)
-        painter = QtGui.QPainter(pixmap)
-        visual_rect = self.visualRegionForSelection(selection).boundingRect()
-        painter.drawPixmap(visual_rect, viewport.grab(visual_rect))
-        painter.end()
-        drag.setPixmap(pixmap)  # TODO: gradient fade if overflowing
-        drag.setHotSpot(self.viewport().mapFromGlobal(QtGui.QCursor.pos()))
+            # Get drag actions from the model.
+            drag_actions = model.supportedDragActions()
 
-        # Prepare cursor.
-        move_cursor = QtGui.QCursor(QtCore.Qt.DragMoveCursor)
-        copy_cursor = QtGui.QCursor(QtCore.Qt.DragCopyCursor)
-        drag.setDragCursor(move_cursor.pixmap(), QtCore.Qt.MoveAction)
-        drag.setDragCursor(copy_cursor.pixmap(), QtCore.Qt.CopyAction)
+            # Start drag.
+            viewport = self.viewport()
+            drag = QtGui.QDrag(viewport)
+            drag.setMimeData(mime_data)
 
-        # Execute drag.
-        drag.exec_(drag_actions)
+            # Prepare pixmap.
+            pixmap = QtGui.QPixmap(viewport.visibleRegion().boundingRect().size())
+            pixmap.fill(QtCore.Qt.transparent)
+            painter = QtGui.QPainter(pixmap)
+            visual_rect = self.visualRegionForSelection(selection).boundingRect()
+            painter.drawPixmap(visual_rect, viewport.grab(visual_rect))
+            painter.end()
+            drag.setPixmap(pixmap)  # TODO: gradient fade if overflowing
+            drag.setHotSpot(self.viewport().mapFromGlobal(QtGui.QCursor.pos()))
+
+            # Prepare cursor.
+            move_cursor = QtGui.QCursor(QtCore.Qt.DragMoveCursor)
+            copy_cursor = QtGui.QCursor(QtCore.Qt.DragCopyCursor)
+            drag.setDragCursor(move_cursor.pixmap(), QtCore.Qt.MoveAction)
+            drag.setDragCursor(copy_cursor.pixmap(), QtCore.Qt.CopyAction)
+
+            # Get state before.
+            state_before = model_obj._state
+
+            # Execute drag.
+            action = drag.exec_(drag_actions)
+
+            # Move action was performed and state did not change, so item was moved
+            # somewhere else. Delete the items from the list in this case.
+            if action == QtCore.Qt.MoveAction:
+                state_after = model_obj._state
+                if state_before is state_after:
+                    model_obj.delete(slice(first_index.row(), last_index.row() + 1))
 
     def setAcceptDrops(self, accept_drop):
         """

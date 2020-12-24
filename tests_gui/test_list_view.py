@@ -15,17 +15,32 @@ def test_list_view():
     qt_app = QtWidgets.QApplication([])
     app = Application()
     initial = (Thing(app, name=str(i)) for i in range(1000))
-    lst = list_cls(Thing)(app, initial)
+    lst_a = list_cls(Thing)(app, initial)
+    lst_b = list_cls(Thing)(app)
 
-    model = OQListModel(
+    model_a = OQListModel(
         headers=(ListModelHeader(title="name"),), mime_type="application/thing_yaml"
     )
-    model.setObj(lst)
+    model_a.setObj(lst_a)
 
-    view = OQListView()
-    view.setModel(model)
+    model_b = OQListModel(
+        headers=(ListModelHeader(title="name"),), mime_type="application/thing_yaml"
+    )
+    model_b.setObj(lst_b)
 
-    view.show()
+    view_a = OQListView()
+    view_a.setModel(model_a)
+
+    view_b = OQListView()
+    view_b.setModel(model_b)
+
+    widget = QtWidgets.QWidget()
+    layout = QtWidgets.QHBoxLayout()
+    widget.setLayout(layout)
+    layout.addWidget(view_a)
+    layout.addWidget(view_b)
+
+    widget.show()
     qt_app.exec_()
 
 
