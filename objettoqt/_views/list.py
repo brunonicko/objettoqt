@@ -1,12 +1,17 @@
 # -*- coding: utf-8 -*-
 """List view."""
 
+from weakref import WeakKeyDictionary
+
 from objetto.objects import MutableListObject
 from Qt import QtCore, QtGui, QtWidgets
 
-from .._mixins import OQAbstractItemViewMixin
+from .._mixins import OQObjectMixin, OQAbstractItemViewMixin, OQAbstractItemModelMixin
 
 __all__ = ["OQListViewMixin", "OQListView", "OQTreeListView"]
+
+
+_internal_move_cache = WeakKeyDictionary()
 
 
 class _OQListViewMixinEventFilter(QtCore.QObject):
@@ -170,14 +175,70 @@ class OQListViewMixin(OQAbstractItemViewMixin, _object):
             state_before = model_obj._state
 
             # Execute drag.
-            action = drag.exec_(drag_actions)
+            try:
+                action = drag.exec_(drag_actions)
+            finally:
+                moved_mimed_data_id = _internal_move_cache.pop(model_obj, None)
 
             # Move action was performed and state did not change, so item was moved
             # somewhere else. Delete the items from the list in this case.
-            if action == QtCore.Qt.MoveAction:
-                state_after = model_obj._state
-                if state_before is state_after:
-                    model_obj.delete(slice(first_index.row(), last_index.row() + 1))
+            if moved_mimed_data_id != id(mime_data):
+                if action == QtCore.Qt.MoveAction:
+                    state_after = model_obj._state
+                    if state_before is state_after:
+                        model_obj.delete(slice(first_index.row(), last_index.row() + 1))
+
+    def dropEvent(self, event):
+        """
+        Intercept drop event to ensure correct move action behavior.
+
+        :param event: Drop event.
+        :type event: QtGui.QDropEvent
+        """
+        super(OQListViewMixin, self).dropEvent(event)
+
+        # Only proceed if the action was a move action.
+        if event.dropAction() != QtCore.Qt.MoveAction:
+            return
+
+        # This needs to have a model and a object.
+        model = self.model()
+        if not isinstance(model, OQAbstractItemModelMixin):
+            return
+        obj = model.obj()
+        if obj is None:
+            return
+
+        # Get source if drag came from the same application.
+        source = event.source()
+        if source is None:
+            return
+
+        # Is source a viewport? Set the actual source as the view's model.
+        source_parent = source.parent()
+        if isinstance(source_parent, QtWidgets.QAbstractItemView):
+            try:
+                if source_parent.viewport() is not source:
+                    raise AttributeError()
+            except AttributeError:
+                pass
+            else:
+                source = source_parent.model()
+                if source is None:
+                    return
+
+        # Source needs to be a mixed OQObject.
+        if not isinstance(source, OQObjectMixin):
+            return
+
+        # Get source's object.
+        source_obj = source.obj()
+        if source_obj is None:
+            return
+
+        # Objects are the same, store mime data's id in the cache.
+        if obj is source_obj:
+            _internal_move_cache[obj] = id(event.mimeData())
 
     def setAcceptDrops(self, accept_drop):
         """
