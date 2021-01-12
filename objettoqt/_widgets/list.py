@@ -592,6 +592,15 @@ class OQWidgetList(OQListView):
         """
         return self.__model.mimeType()
 
+    def setMimeType(self, mime_type=None):
+        """
+        Set mime type.
+
+        :param mime_type: Mime type.
+        :type mime_type: str or None
+        """
+        self.__model.setMimeType(mime_type=mime_type)
+
 
 class _WidgetListDelegate(QtWidgets.QStyledItemDelegate):
     def __init__(self, parent):
