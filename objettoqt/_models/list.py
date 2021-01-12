@@ -665,6 +665,15 @@ objettoqt.models.AbstractListModelHeader or str] or None
         """
         return self.__mime_type
 
+    def setMimeType(self, mime_type=None):
+        """
+        Set mime type.
+
+        :param mime_type: Mime type.
+        :type mime_type: str or None
+        """
+        self.__mime_type = mime_type or None
+
     def mimeTypes(self):
         """
         Get mime types.
