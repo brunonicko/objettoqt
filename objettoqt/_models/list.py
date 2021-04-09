@@ -628,7 +628,9 @@ objettoqt.models.AbstractListModelHeader or str] or None
 
         header = self.headersObj()[column]
         flags = header.flags(obj, row)
-        flags |= QtCore.Qt.ItemNeverHasChildren
+
+        if hasattr(QtCore.Qt, "ItemNeverHasChildren"):
+            flags |= QtCore.Qt.ItemNeverHasChildren
 
         mime_type = self.mimeType()
         if mime_type:

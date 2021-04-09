@@ -14,7 +14,7 @@ def test_list_view():
 
     qt_app = QtWidgets.QApplication([])
     app = Application()
-    initial = (Thing(app, name=str(i)) for i in range(1000))
+    initial = (Thing(app, name=str(i)) for i in range(100))
     lst_a = list_cls(Thing)(app, initial)
     lst_b = list_cls(Thing)(app)
 

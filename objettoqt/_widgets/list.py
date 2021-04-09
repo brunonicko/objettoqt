@@ -98,7 +98,7 @@ class OQWidgetList(OQListView):
         header=None,
         mime_type=None,
         *args,
-        **kwargs,
+        **kwargs
     ):
         super(OQWidgetList, self).__init__(parent=parent, *args, **kwargs)
 
