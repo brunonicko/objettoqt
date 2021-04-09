@@ -11,6 +11,8 @@ IF "%1" == "" (
     goto environment
 ) ELSE IF "%1" == "tests" (
     goto tests
+) ELSE IF "%1" == "tests_gui" (
+    goto tests_gui
 ) ELSE IF "%1" == "format" (
     goto format
 ) ELSE IF "%1" == "lint" (
@@ -41,6 +43,10 @@ goto end
 
 :tests
 python -m pytest tests
+goto end
+
+:tests_gui
+for /r %%v in (.\tests_gui\test_*.py) do python -m pytest "%%v" -s
 goto end
 
 :format

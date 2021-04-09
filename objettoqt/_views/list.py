@@ -160,7 +160,13 @@ class OQListViewMixin(OQAbstractItemViewMixin, _object):
             pixmap.fill(QtCore.Qt.transparent)
             painter = QtGui.QPainter(pixmap)
             visual_rect = self.visualRegionForSelection(selection).boundingRect()
-            painter.drawPixmap(visual_rect, viewport.grab(visual_rect))
+            if hasattr(viewport, "grab"):
+                painter.drawPixmap(visual_rect, viewport.grab(visual_rect))
+            else:
+                painter.drawPixmap(
+                    visual_rect,
+                    QtGui.QPixmap.grabWidget(viewport, visual_rect),
+                )
             painter.end()
             drag.setPixmap(pixmap)  # TODO: gradient fade if overflowing
             drag.setHotSpot(self.viewport().mapFromGlobal(QtGui.QCursor.pos()))
